@@ -12,6 +12,8 @@ docker-compose down
 
 //logs de djando
 docker-compose logs django
+//Ver logs permanetemente como cuando se arranca runserver
+docker-compose logs -f django
 
 //logs de node 
 docker-compose logs node

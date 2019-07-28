@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Listado de usuario de una franquicia
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+   
+{% endif %}
+<div class="container h-100">
+    <div class="row align-items-center h-100">
+        <div class="col-6 mx-auto">
+            <div class="jumbotron">
+                <form method="POST">
+                	{% for message in messages %}
+                	{% if 'respuesta' in message.tags %}
+                	<div class="alert alert-success" role="alert">
+                		{{message}}
+                	</div>
+                	{% endif %}
+                	{% endfor %}
+                	<div class="form-group">
+                		{% csrf_token %}
+                		<label>Digite las veces que quiere que encienda el bombillo:</label>
+                		<input class="form-control" type="number" name="times" min="0" max="9" value="0">	
+                	</div>
+                	
+                	<button type="submit" class="btn btn-info">
+                		Encender
+                	</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Crear Usuario
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12">
+			<div class="form-group">
+				<label>Nombre</label>
+				<input type="text" value="{{user.first_name}}" class="form-control">
+			</div>
+			<div class="form-group">
+				<label>Apellido</label>
+				<input type="text" value="{{user.last_name}}" class="form-control">
+			</div>
+			<div class="form-group">
+				<label>email</label>
+				<input type="text" value="{{user.email}}" class="form-control">
+			</div>
+			<div class="form-group">
+				<label>Teléfono</label>
+				<input type="text" value="{{user.phone}}" class="form-control">
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

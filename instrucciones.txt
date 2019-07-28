@@ -1,0 +1,52 @@
+//Para construir el docker
+docker-compose build
+
+//mirar el estado de los servicios
+docker-compose ps
+
+//levantar los servicios del docker
+docker-compose up -d
+
+//Para tumbar docker
+docker-compose down
+
+//logs de djando
+docker-compose logs django
+
+//logs de node 
+docker-compose logs node
+
+//logs de celery
+docker-compose logs celery
+
+//logs de nginx
+docker-compose logs nginx
+
+//Para manejar postgres
+docker exec -it diuproject_db_1 psql -U diu
+//Cambiar a DB
+\c postgres
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+------------------------------------------------------------------
+No mire esto, pero tampoco lo borre
+export PATH=/Library/PostgreSQL/9.6/bin/:$PATH
+find . -path "*/migrations/*.py" -not -name "__init__.py" -delete
+find . -path "*/migrations/*.pyc"  -delete
+select pg_terminate_backend(pid) from pg_stat_activity where datname='diu';

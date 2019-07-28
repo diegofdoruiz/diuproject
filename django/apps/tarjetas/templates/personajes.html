@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Listado de Personajes
+{% endblock %}
+
+{% block content %}
+    <a class="btn btn-info float-right" href="{% url 'tarjetas:create' %}">Nuevo Personaje</a>
+    <br>
+    <hr>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre de Personaje</th>
+                <th>Información</th>
+                <th class="text-center">Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for personaje in object_list %}
+            <tr>
+                <td>{{ personaje.nombre_personaje }}</td>
+                <td>{{ personaje.info_personaje }}</td>
+                <td class="text-center">
+                    <a class="btn text-danger" href="{% url 'tarjetas:edit' pk=personaje.id %}"><i class="fas fa-edit"></i></a>
+                    <a class="btn text-info" href="{% url 'tarjetas:detail' pk=personaje.id %}"><i class="far fa-eye"></i></a>
+                    <button class="btn text-danger" data-toggle="modal" data-target="#delete_modal_{{ personaje.id }}">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                    <div class="modal fade" id="delete_modal_{{ personaje.id }}" tabindex="-1">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Está seguro de elimiar el personaje "{{ personaje.nombre_personaje }}"? 
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{% url 'tarjetas:delete' personaje.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Aceptar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if personaje.has_other_pages %}
+    <ul class="pagination">
+        {% if personaje.has_previous %}
+        <li><a href="?page={{ personaje.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in personaje.paginator.page_range %}
+        {% if personaje.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if personaje.has_next %}
+        <li><a href="?page={{ personaje.next_page_number }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+{% endblock %}

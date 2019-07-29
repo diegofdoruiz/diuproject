@@ -33,7 +33,7 @@ class AnswerCreate(CreateView):
     model = Answer
     form_class = AnswerForm
     template_name = 'answer_form.html'
-    success_url = reverse_lazy('questions:question')
+    success_url = reverse_lazy('questions:listAnswer')
 
 class AnswerList(ListView):
     model = Answer
@@ -43,7 +43,7 @@ class AnswerView(UpdateView):
     model = Answer
     form_class = AnswerForm
     template_name = 'answer_form.html'
-    success_url = reverse_lazy('questions:question')
+    success_url = reverse_lazy('questions:listAnswer')
 
 class AnswerDetail(DetailView):
     model = Answer

@@ -1,37 +1,33 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 {% block page_title %}
-    Listado de usuario de una franquicia
+    Listado de cursos
 {% endblock %}
 
 {% block content %}
-    <a class="btn btn-info float-right" href="{% url 'users:create' %}">Nuevo Usuario</a>
+    <a class="btn btn-info float-right" href="{% url 'courses:create' %}">Nuevo Curso</a>
     <br>
     <hr>
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Usuario</th>
-                <th>Email</th>
-                <th>Primer Nombre</th>
-                <th>Primer Apellido</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
                 <th class="text-center">Opciones</th>
             </tr>
         </thead>
         <tbody>
-            {% for user in object_list %}
+            {% for course in object_list %}
             <tr>
-                <td>{{ user.username }}</td>
-                <td>{{ user.email }}</td>
-                <td>{{ user.first_name }}</td>
-                <td>{{ user.last_name }}</td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.description }}</td>
                 <td class="text-center">
-                    <a class="btn text-danger" href="{% url 'users:edit' pk=user.id %}"><i class="fas fa-edit"></i></a>
-                    <a class="btn text-info" href="{% url 'users:detail' pk=user.id %}"><i class="far fa-eye"></i></a>
-                    <button class="btn text-danger" data-toggle="modal" data-target="#delete_modal_{{ user.id }}">
+                    <a class="btn text-danger" href="{% url 'courses:edit' pk=course.id %}"><i class="fas fa-edit"></i></a>
+                    <a class="btn text-info" href="{% url 'courses:detail' pk=course.id %}"><i class="far fa-eye"></i></a>
+                    <button class="btn text-danger" data-toggle="modal" data-target="#delete_modal_{{ course.id }}">
                         <i class="far fa-trash-alt"></i>
                     </button>
-                    <div class="modal fade" id="delete_modal_{{ user.id }}" tabindex="-1">
+                    <div class="modal fade" id="delete_modal_{{ course.id }}" tabindex="-1">
                         <div class="modal-dialog" role="document">
                             <div class="modal-content">
                                 <div class="modal-header">
@@ -41,10 +37,10 @@
                                     </button>
                                 </div>
                                 <div class="modal-body">
-                                    Esta seguro de elimiar el usuario "{{ user.first_name_1 }}"
+                                    Esta seguro de elimiar el curso "{{ course.name }}"
                                 </div>
                                 <div class="modal-footer">
-                                    <form action="{% url 'users:delete' user.id %}" method="POST">
+                                    <form action="{% url 'courses:delete' course.id %}" method="POST">
                                         {% csrf_token %}
                                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
                                         <button type="submit" class="btn btn-danger">Aceptar</button>

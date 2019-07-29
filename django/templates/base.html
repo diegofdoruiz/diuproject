@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,44 +21,108 @@
                       <!-- <li class="nav-item active">
                         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                       </li> -->
+                      {% if perms.users.view_user %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Usuarios
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.users.add_user %}
                           <a class="dropdown-item" href="{% url 'users:create' %}">Crear Usuario</a>
+                          {% endif %}
+                          {% if perms.users.change_user %}
                           <a class="dropdown-item" href="{% url 'users:users' %}">Usuarios</a>
+                          {% endif %}
                         </div>
-                      </li> 
+                      </li>
+                      {% endif %}
+
+                      {% if perms.roles.view_role %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Roles
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.roles.add_role %}
                           <a class="dropdown-item" href="{% url 'roles:create' %}">Crear Role</a>
+                          {% endif %}
+                          {% if perms.roles.change_role %}
                           <a class="dropdown-item" href="{% url 'roles:roles' %}">Roles</a>
+                          {% endif %}
                         </div>
                       </li>
+                      {% endif %}
+
+                      {% if perms.courses.view_course %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Cursos
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.courses.add_course %}
+                          <a class="dropdown-item" href="{% url 'courses:create' %}">Crear Curso</a>
+                          {% endif %}
+                          {% if perms.courses.change_course %}
+                          <a class="dropdown-item" href="{% url 'courses:courses' %}">Cursos</a>
+                          {% endif %}
+                        </div>
+                      </li>
+                      {% endif %}
+
+                      {% if perms.questions.view_question %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Preguntas
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.questions.add_question %}
                           <a class="dropdown-item" href="{% url 'questions:create' %}">Crear Pregunta</a>
+                          {% endif %}
+                          {% if perms.questions.change_question %}
                           <a class="dropdown-item" href="{% url 'questions:question' %}">Preguntas</a>
+                          {% endif %}
+                          {% if perms.questions.add_answer %}
                           <a class="dropdown-item" href="{% url 'questions:createAnswer' %}">Crear Respuesta</a>
+                          {% endif %}
+                          {% if perms.questions.change_answer %}
                           <a class="dropdown-item" href="{% url 'questions:listAnswer' %}">Respuestas</a>
+                          {% endif %}
                         </div>
                       </li>
+                      {% endif %}
+
+                      {% if perms.tarjetas.view_tarjeta %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Personajes
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.tarjetas.add_tarjeta %}
                           <a class="dropdown-item" href="{% url 'tarjetas:create' %}">Crear Personaje</a>
+                          {% endif %}
+                          {% if perms.tarjetas.change_tarjeta %}
                           <a class="dropdown-item" href="{% url 'tarjetas:personajes' %}">Personajes</a>
+                          {% endif %}
                         </div>
-                      </li>                    
+                      </li> 
+                      {% endif %}
+
+                      {% if perms.games.view_game %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Partidas
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.games.add_game %}
+                          <a class="dropdown-item" href="{% url 'games:create' %}">Crear Partida</a>
+                          {% endif %}
+                          {% if perms.games.change_game %}
+                          <a class="dropdown-item" href="{% url 'games:games' %}">Partidas</a>
+                          {% endif %}
+                        </div>
+                      </li> 
+                      {% endif %}
+
                     </ul>
                     <ul class="navbar-nav ml-auto nav-flex-icons">
                       <li class="nav-item dropdown">

@@ -11,17 +11,15 @@
     <table class="table table-bordered">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Pregunta</th>
-                <th>Opcion</th>
+                <th>Nombre</th>
+                <th>Opción</th>
                 <th class="text-center">Opciones</th>
             </tr>
         </thead>
         <tbody>
             {% for answer in object_list %}
             <tr>
-                <td>{{ answer.id }}</td>
-                <td>{{ answer.question }}</td>
+                <td>{{ answer.name }}</td>
                 <td>{{ answer.option }}</td>
                 <td class="text-center">
                     <a class="btn text-danger" href="{% url 'questions:editAnswer' pk=answer.id %}"><i class="fas fa-edit"></i></a>

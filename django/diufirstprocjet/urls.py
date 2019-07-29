@@ -29,4 +29,6 @@ urlpatterns = [
     path('login/', LoginView.as_view(template_name='login.html'), name="login"),
     path('logout/', LogoutView.as_view(template_name='home.html'), name="logout"),
     path('personajes/', include('apps.tarjetas.urls', namespace='tarjetas')),
+    path('courses/', include('apps.courses.urls', namespace='courses')),
+    path('games/', include('apps.games.urls', namespace='games')),
 ]

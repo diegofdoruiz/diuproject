@@ -1,11 +1,10 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
 {% block page_title %}
-    Crear Usuario
+    Crear Partida
 {% endblock %}
 
 {% block content %}
-	{{uss}}
     <form method="POST">
         {% csrf_token %}
         {% bootstrap_form form %}

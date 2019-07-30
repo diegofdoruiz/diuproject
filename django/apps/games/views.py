@@ -44,3 +44,8 @@ class GameDeleteView(PermissionRequiredMixin, DeleteView):
 def play_game(request, pk):
     game = get_object_or_404(Game, pk=pk)
     return render(request, 'play_game.html', {'game':game})
+
+def game_start(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    return render(request, 'game_start.html', {'game':game})
+    

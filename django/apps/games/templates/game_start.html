@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+Partida {{game.name}}
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+{% endif %}
+<div class="container h-100">
+    <div class="row align-items-center h-100">
+        <div class="col-6 mx-auto">
+            <h4>Curso: {{game.course}}</h4>
+            <h4>Partida: {{game.name}}</h4>
+            {% for question in game.questions.all %}
+            <h3>{{question.name}}</h3>
+            <iframe width="420" height="345" src="https://www.youtube.com/embed/P6-k2ZVNiIM">
+            </iframe>
+            <p>{{question.question}}</p>
+            <ol>
+                {% for answer in question.answers.all%}
+                <li>{{answer.option}}</li>
+                {% endfor %}
+            </ol>
+            <!--Cuando la tarjeta de respuesta (a,b,c,d,e) sea leída, 
+                    es decir, niño haya respondido, se habiliará botón siguiente-->
+            <button disabled class="btn btn-block btn-warning">
+                Siguiente
+            </button>
+            {% endfor %}
+            </p>
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}

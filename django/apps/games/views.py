@@ -1,4 +1,4 @@
-from django.shortcuts import render
+from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView,CreateView,UpdateView,DeleteView,DetailView
@@ -40,3 +40,7 @@ class GameDeleteView(PermissionRequiredMixin, DeleteView):
     model = Game
     permission_required = 'games.delete_game'
     success_url = reverse_lazy('games:games')
+
+def play_game(request, pk):
+    game = get_object_or_404(Game, pk=pk)
+    return render(request, 'play_game.html', {'game':game})

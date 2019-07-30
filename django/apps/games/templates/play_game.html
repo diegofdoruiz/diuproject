@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Partida {{game.name}}
+{% endblock %}
+
+{% block content %}
+{% if messages %}  
+{% endif %}
+<div class="container h-100">
+    <div class="row align-items-center h-100">
+        <div class="col-6 mx-auto">
+            <div class="jumbotron">
+                <h4>Esta el la partida: {{game.name}}</h4>
+                <p>
+                    Descripción de la partida:<br>
+                    {{game.description}}
+                </p>
+                <button class="btn btn-block btn-warning">
+                    Iniciar Partida
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -17,8 +17,70 @@
                     {{game.description}}
                 </p>
                 <a href="{% url 'games:game_start' game.id %}" class="btn btn-warning">Ver Partida</a>
+
+                <form method="post" id="game-post-form">
+                    {% csrf_token %}
+                    <input type="hidden" name="option" value="1">
+                    <input type="hidden" name="task_id" value="">
+                </form>
+                <button class="btn btn-block btn-warning action" value="on"> 
+                    Iniciar Partida
+                </button>
+                <div id="result"></div>
             </div>
         </div>
     </div>
 </div>
+{% endblock %}
+
+{% block js %}
+    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+    <script>
+        // Conectamos con el socket en el servidor de Node
+        var socket = io('ws://localhost:3000');
+
+        /* Cualquier mensaje que se reciba en el canal "result"
+        se agrega dentro del div "result" */
+        socket.on('result', function(csvURL) {
+        $("#result").append("<div>"+csvURL+"</div>");
+          // var result = document.getElementById('result');
+          // var aTag = document.createElement('a');
+          // aTag.setAttribute('href', csvURL);
+          // aTag.setAttribute('target', '_blank');
+          // aTag.innerHTML = "Descargar archivo";
+          // result.appendChild(aTag);
+        });
+
+        $(".action").click(function(){
+            if ($(this).val() == "on") {
+                $("#game-post-form input[name='option']").val("1");
+                $(".action").text("Terminar Partida");
+                $(".action").val("off");
+            }else if($(this).val() == "off"){
+                $("#game-post-form input[name='option']").val("2");
+                $(".action").text("Reiniciar Partida");
+                $(".action").val("on");
+            }
+            $("#game-post-form").submit();
+        });
+
+        /* Cuando se presione el botón de submit se envía
+        una petición POST AJAX a la vista para ejecutar la tarea */
+        $("#game-post-form").submit(function (event) {
+            event.preventDefault();
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'games:play_game' game.id %}",
+                data: $('form').serialize(),
+                success: function(celeryTaskId)
+                {
+                    $("#game-post-form input[name='task_id']").val(celeryTaskId);
+                    /* La vista devuelve el ID de la tarea de Celery
+                    y se lo envíamos al server para que sepa a cuál canal
+                    suscribirse */
+                    socket.emit('subscribe', celeryTaskId);
+                }
+            });
+        });
+    </script>
 {% endblock %}

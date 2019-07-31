@@ -1,11 +1,16 @@
 from django.shortcuts import render, get_object_or_404
+from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
-from django.views.generic import ListView,CreateView,UpdateView,DeleteView,DetailView
+from django.views.generic import ListView,CreateView,UpdateView,DeleteView,DetailView,TemplateView
 from apps.games.models import Game
 from apps.games.forms import GameForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
+from diufirstprocjet.celery import app
+from celery.task.control import revoke
+
+from apps.realtime.tasks import listenArduino, stopGame
 
 @method_decorator(login_required, name='dispatch')
 class GameListView(PermissionRequiredMixin, ListView):
@@ -41,11 +46,24 @@ class GameDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'games.delete_game'
     success_url = reverse_lazy('games:games')
 
-def play_game(request, pk):
-    game = get_object_or_404(Game, pk=pk)
-    return render(request, 'play_game.html', {'game':game})
-
 def game_start(request, pk):
     game = get_object_or_404(Game, pk=pk)
     return render(request, 'game_start.html', {'game':game})
     
+
+class PlayGameView(TemplateView):
+    template_name = 'play_game.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(PlayGameView, self).get_context_data(**kwargs)
+        context['game'] = get_object_or_404(Game, pk=self.kwargs.get('pk'))
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if self.request.POST.get('option') == '1':
+            task_id = listenArduino.delay()
+            return HttpResponse(task_id)
+        elif self.request.POST.get('option') == '2':
+            revoke(self.request.POST.get('task_id'), terminate=True)
+            return HttpResponse('off')
+        return HttpResponse('ok')

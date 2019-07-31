@@ -16,9 +16,7 @@
                     Descripción de la partida:<br>
                     {{game.description}}
                 </p>
-                <button class="btn btn-block btn-warning">
-                    Iniciar Partida
-                </button>
+                <a href="{% url 'games:game_start' game.id %}" class="btn btn-warning">Ver Partida</a>
             </div>
         </div>
     </div>

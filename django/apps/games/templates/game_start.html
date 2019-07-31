@@ -7,31 +7,54 @@ Partida {{game.name}}
 {% block content %}
 {% if messages %}
 {% endif %}
-<div class="container h-100">
-    <div class="row align-items-center h-100">
-        <div class="col-6 mx-auto">
-            <h4>Curso: {{game.course}}</h4>
-            <h4>Partida: {{game.name}}</h4>
-            {% for question in game.questions.all %}
+<div class="container">
+    <div>
+        <h3>Curso: {{game.course}}</h3>
+        <h4>Partida: {{game.name}}</h4>
+    </div>
+    <br>
+
+    {% for question in game.questions.all %}
+    <div class="row" style="margin: 4rem;">
+        <div class="col-6">
+
             <h3>{{question.name}}</h3>
-            <iframe width="420" height="345" src="https://www.youtube.com/embed/P6-k2ZVNiIM">
-            </iframe>
-            <p>{{question.question}}</p>
-            <ol>
+            <br>
+            <h4>{{question.question}}</h4>
+            <ol type="a">
                 {% for answer in question.answers.all%}
-                <li>{{answer.option}}</li>
+                <li>
+                    <input type="checkbox" />{{answer.option}}
+                </li>
                 {% endfor %}
             </ol>
-            <!--Cuando la tarjeta de respuesta (a,b,c,d,e) sea leída, 
-                    es decir, niño haya respondido, se habiliará botón siguiente-->
-            <button disabled class="btn btn-block btn-warning">
-                Siguiente
+            <h5>Respuesta seleccionada: </h5>
+            <button id="{{question.id}}" onclick="cambiarBtn(this.id);" class="btn btn-block btn-success">
+                Guardar
             </button>
-            {% endfor %}
             </p>
+        </div>
 
-
+        <div class="col-6">
+            <iframe width="100%" height="100%" src="{{question.video}}">
+            </iframe>
         </div>
     </div>
+    {% endfor %}
+    <script type="text/javascript">
+        var valor = true
+        function cambiarBtn(idbtn) {
+            var btn = document.getElementById(idbtn);
+            if(btn.className === "btn btn-block btn-success"){
+            valor ? btn.innerText = "Cancelar" : btn.innerText = "Guardar";
+            btn.className = "btn btn-block btn-danger"
+            valor != valor
+            }else{
+                btn.className = "btn btn-block btn-success"
+                valor ? btn.innerText = "Guardar" : btn.innerText = "Cancelar";
+                valor != valor
+            }
+        }
+    </script>
 </div>
 {% endblock %}

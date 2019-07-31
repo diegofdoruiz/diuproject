@@ -13,8 +13,6 @@ services:
   
   django:
     build: ./django
-    devices:
-      - /dev/ttyS0:/dev/ttyS0
     command: python manage.py runserver 0.0.0.0:8000
     volumes:
       - ./django:/djangoapp

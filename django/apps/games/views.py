@@ -10,7 +10,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from diufirstprocjet.celery import app
 from celery.task.control import revoke
 
-from apps.realtime.tasks import listenArduino, stopGame
+from apps.realtime.tasks import listenArduino
 
 @method_decorator(login_required, name='dispatch')
 class GameListView(PermissionRequiredMixin, ListView):

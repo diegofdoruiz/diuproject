@@ -10,13 +10,14 @@ def home(request):
 def test(request):
 	if request.method == 'POST':
 		times = request.POST.get('times', 0)
-		print(times)
 		respuesta = "No se encenderá el bombillo"
 		if int(times) > 0:
 			ser = serial.Serial()
-			ser.baudrate = 9600
+			ser.baudrate = 115200
 			ser.port = '/dev/cu.usbmodem14201'
 			ser.open()
+			if(ser.isOpen() == True):
+				print('Abierto')
 			time.sleep(2)
 			send = bytearray()
 			send.extend(str(times).encode('latin-1'))

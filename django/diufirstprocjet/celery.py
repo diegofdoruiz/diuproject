@@ -14,6 +14,6 @@ app = Celery('diufirstprocjet')
 app.config_from_object('django.conf:settings')
 app.autodiscover_tasks(lambda: settings.INSTALLED_APPS)
 app.conf.update(
-    BROKER_URL = 'redis://localhost:6379/0',
-    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0',
+    BROKER_URL = 'redis://redis:6379/0',
+    CELERY_RESULT_BACKEND = 'redis://redis:6379/0',
 )

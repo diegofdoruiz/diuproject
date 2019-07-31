@@ -5,7 +5,8 @@ from django.contrib import messages
 from celery.task.control import revoke
 from celery import task
 
-redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
+redis_client = redis.StrictRedis(host='redis', port=6379, db=0)
+# redis_client = redis.StrictRedis(host='localhost', port=6379, db=0)
 
 @task(bind=True)
 def listenArduino(self):

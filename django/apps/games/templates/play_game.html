@@ -74,11 +74,13 @@
                 data: $('form').serialize(),
                 success: function(celeryTaskId)
                 {
-                    $("#game-post-form input[name='task_id']").val(celeryTaskId);
                     /* La vista devuelve el ID de la tarea de Celery
                     y se lo envíamos al server para que sepa a cuál canal
                     suscribirse */
-                    socket.emit('subscribe', celeryTaskId);
+                    if (celeryTaskId != "on" && celeryTaskId != "off" && celeryTaskId != "ok") {
+                        socket.emit('subscribe', celeryTaskId);
+                        $("#game-post-form input[name='task_id']").val(celeryTaskId);
+                    }
                 }
             });
         });

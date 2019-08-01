@@ -1,16 +1,14 @@
 from django.db import models
 
-class Answer(models.Model):
-	name = models.CharField(max_length=128, null=False, blank=False)
-	option = models.CharField(max_length=256) # Campo tipo Char con un máximo de 200 caracteres de longitud.
-
-	def __str__(self):
-		return self.name
-
 class Question(models.Model):
-	name = models.CharField(max_length=128, null=False, blank=False)
-	question = models.CharField(max_length=512)
-	answers = models.ManyToManyField(Answer)
+	name = models.CharField(max_length=512, null=False, blank=False)
+	statement = models.CharField(max_length=512, null=False, blank=False)
+	answer_1 = models.CharField(max_length=512, null=True, blank=True)
+	answer_2 = models.CharField(max_length=512, null=True, blank=True)
+	answer_3 = models.CharField(max_length=512, null=True, blank=True)
+	answer_4 = models.CharField(max_length=512, null=True, blank=True)
+	answer_5 = models.CharField(max_length=512, null=True, blank=True)
+	correct_answer = models.CharField(max_length=32, null=False, blank=False)
 	video = models.CharField(blank=False, max_length=500)
 	def __str__(self):
 		return self.name

@@ -7,13 +7,6 @@ class QuestionForm(forms.ModelForm):
         fields = (
             'id',
             'name',
-<<<<<<< HEAD
-        	'question',
-            'answers',
-            'video')
-        widgets = {
-            'answers': forms.CheckboxSelectMultiple()
-=======
         	'statement',
             'video',
             'answer_1',
@@ -26,5 +19,4 @@ class QuestionForm(forms.ModelForm):
             'name':'Nombre',
             'statement':'Enunciado',
             'video':'Multimedia',
->>>>>>> 37eeb2a5b989a3becbb94106732ad835cf3831ac
         }

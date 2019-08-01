@@ -5,7 +5,8 @@ var io = require('socket.io')(http);
 var redis = require('redis');
 
 // Conectamos con el servidor de redis
-var redisClient = redis.createClient(6379, 'redis');
+// var redisClient = redis.createClient(6379, 'redis');
+var redisClient = redis.createClient(6379);
 
 /* Esta función recibe cualquier petición de
 conexión desde un socket en el navegador (cliente)

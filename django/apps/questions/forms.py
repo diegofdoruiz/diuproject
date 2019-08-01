@@ -1,15 +1,5 @@
 from apps.questions.models import *
 from django import forms
-
-class AnswerForm(forms.ModelForm):
-    class Meta:
-        model = Answer
-        fields = (
-            'id',
-            'name',
-            'option')
-        widgets = {
-        }
         
 class QuestionForm(forms.ModelForm):
     class Meta:
@@ -17,8 +7,16 @@ class QuestionForm(forms.ModelForm):
         fields = (
             'id',
             'name',
-        	'question',
-            'answers',
-            'video')
-        widgets = {
+        	'statement',
+            'video',
+            'answer_1',
+            'answer_2',
+            'answer_3',
+            'answer_4',
+            'answer_5',
+            'correct_answer')
+        labels = {
+            'name':'Nombre',
+            'statement':'Enunciado',
+            'video':'Multimedia',
         }

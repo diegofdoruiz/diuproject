@@ -21,4 +21,5 @@ class QuestionForm(forms.ModelForm):
             'answers',
             'video')
         widgets = {
+            'answers': forms.CheckboxSelectMultiple()
         }

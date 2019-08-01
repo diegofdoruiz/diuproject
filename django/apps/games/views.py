@@ -4,12 +4,14 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.views.generic import ListView,CreateView,UpdateView,DeleteView,DetailView,TemplateView
 from apps.games.models import Game
+from apps.questions.models import Question
 from apps.games.forms import GameForm
 from django.urls import reverse_lazy
 from django.contrib.auth.mixins import PermissionRequiredMixin
 from diufirstprocjet.celery import app
 from celery.task.control import revoke
-
+import pyttsx3 as tts
+import threading
 from apps.realtime.tasks import listenArduino
 
 @method_decorator(login_required, name='dispatch')
@@ -48,6 +50,23 @@ class GameDeleteView(PermissionRequiredMixin, DeleteView):
 
 def game_start(request, pk):
     game = get_object_or_404(Game, pk=pk)
+    preguntas = Question.objects.filter(game=game )
+    
+    
+    engine = tts.init()
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', 'spanish')
+    engine.setProperty('rate', 140) 
+    for q in preguntas : 
+        engine.say(str(q.question))
+        # for respuesta in list(q.answers):
+        #     engine.say(str(respuesta))
+
+    print(preguntas)
+    
+    print()
+    engine.runAndWait()
+    engine.stop()
     return render(request, 'game_start.html', {'game':game})
     
 

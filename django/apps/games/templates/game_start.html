@@ -14,8 +14,37 @@ Partida {{game.name}}
     </div>
     <br>
 
+    <div id= "tema">
+        
+    </div>
+
+
+    <div id= "pregunta">
+        
+    </div>
     
-    {% for question in game.topic.questions.all %}
+
+    <div id= "respuesta_1">
+        
+    </div>
+    
+    <div id= "respuesta_2">
+        
+    </div>
+    
+    <div id= "respuesta_3">
+        
+    </div>
+    
+    <div id= "respuesta_4">
+        
+    </div>
+    
+    <div id= "respuesta_5">
+        
+    </div>
+    
+    {% for question in game.topics.questions.all %}
     
     <div class="row" style="margin: 4rem;">
         <div class="col-6">

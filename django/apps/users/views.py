@@ -32,7 +32,7 @@ def create(request):
 @permission_required('users.change_user')
 def edit(request, pk):
     instance = get_object_or_404(User, pk=pk)
-    form = UserForm(request.POST or None, instance=instance)
+    form = UserForm(request.POST or None, instance=instance, user=request.user)
     if request.method == 'POST':
         if form.is_valid():
             user = form.save(commit=False)

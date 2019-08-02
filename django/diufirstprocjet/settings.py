@@ -36,7 +36,6 @@ ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.99.102']
 # Application definition
 
 INSTALLED_APPS = [
-    'django_select2',
     'apps.realtime',
     'apps.topics',
     'apps.users',

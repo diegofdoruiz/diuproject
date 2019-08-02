@@ -15,7 +15,7 @@ Partida {{game.name}}
     <br>
 
     
-    {% for question in game.questions.all %}
+    {% for question in game.topic.questions.all %}
     
     <div class="row" style="margin: 4rem;">
         <div class="col-6">
@@ -63,6 +63,8 @@ Partida {{game.name}}
         </div>
     </div>
     {% endfor %}
+
+    <button id ="test" class="btn btn-block btn-success"> Tema 1</button>
     <script type="text/javascript">
         var valor = true
         function cambiarBtn(idbtn) {

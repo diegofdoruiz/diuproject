@@ -7,3 +7,6 @@ class Topic(models.Model):
     info = models.TextField(max_length= 1024, validators=[MinLengthValidator(6, 'Mínimo 6 carateres.')])
     card = models.CharField(max_length=128, null=False, blank=False)
     questions = models.ManyToManyField(Question)
+
+    def __str__(self):
+    	return self.name

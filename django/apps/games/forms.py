@@ -18,12 +18,5 @@ class GameForm(forms.ModelForm):
 			'name',
 			'description',
 			'course',
-			'questions'
+			'topics'
 		)
-		widgets= {
-			'id' : forms.TextInput(attrs={'class':'form-control'}),
-			'name' : forms.TextInput(attrs={'class':'form-control'}),
-			'description' : forms.TextInput(attrs={'class':'form-control'}),
-			'questions' :forms.CheckboxSelectMultiple(),
-			'course' : forms.Select(attrs={'class':'form-control'}),
-		}

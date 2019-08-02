@@ -87,17 +87,17 @@
                       </li>
                       {% endif %}
 
-                      {% if perms.tarjetas.view_tarjeta %}
+                      {% if perms.topics.view_tarjeta %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Personajes
+                          Temas
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          {% if perms.tarjetas.add_tarjeta %}
-                          <a class="dropdown-item" href="{% url 'tarjetas:create' %}">Crear Personaje</a>
+                          {% if perms.topics.add_tarjeta %}
+                          <a class="dropdown-item" href="{% url 'topics:create' %}">Crear Tema</a>
                           {% endif %}
-                          {% if perms.tarjetas.change_tarjeta %}
-                          <a class="dropdown-item" href="{% url 'tarjetas:personajes' %}">Personajes</a>
+                          {% if perms.topics.change_tarjeta %}
+                          <a class="dropdown-item" href="{% url 'topics:topics' %}">Temas</a>
                           {% endif %}
                         </div>
                       </li> 

@@ -17,7 +17,11 @@
 	            		{% bootstrap_field form.video %}
 		            	<hr>
 
-		            	<h3>Agregar Respuestas</h3>
+		            	{% if form.instance.name %}
+		            		<h3>Respuestas</h3>
+		            	{% else %}
+		            		<h3>Agregar Respuestas</h3>
+		            	{% endif %}
 
 		            	<div class="form-group">
 			            	<button type="button" id="add-answer" class="btn btn-link">

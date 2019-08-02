@@ -14,22 +14,44 @@ Partida {{game.name}}
     </div>
     <br>
 
+    
     {% for question in game.questions.all %}
+    
     <div class="row" style="margin: 4rem;">
         <div class="col-6">
 
             <h3>{{question.name}}</h3>
             <br>
-            <h4>{{question.question}}</h4>
+            <h4>{{question.statement}}</h4>
             <ol type="a">
-                {% for answer in question.answers.all%}
+                {% comment %} {% for answer in question.answers.all%}
                 <li>
                     <input type="checkbox" />{{answer.option}}
                 </li>
-                {% endfor %}
+                {% endfor %} {% endcomment %}
+                {% if question.answer_1 %}
+                    <li> 
+                        <input type="checkbox" /> {{question.answer_1}}
+                    </li>
+                {% endif %}
+                {% if question.answer_2 %}
+                    <li> 
+                        <input type="checkbox" /> {{question.answer_2}}
+                    </li>
+                {% endif %}
+                {% if question.answer_3 %}
+                    <li> 
+                        <input type="checkbox" /> {{question.answer_3}}
+                    </li>
+                {% endif %}
+                {% if question.answer_4 %}
+                    <li> 
+                        <input type="checkbox" /> {{question.answer_4}}
+                    </li>
+                {% endif %}
             </ol>
             <h5>Respuesta seleccionada: </h5>
-            <button id="{{question.id}}" onclick="cambiarBtn(this.id);" class="btn btn-block btn-success">
+            <button id="{{question.id}}" onclick="cambiarBtn(this.id); play_next(this.id) " class="btn btn-block btn-success">
                 Guardar
             </button>
             </p>
@@ -55,6 +77,75 @@ Partida {{game.name}}
                 valor != valor
             }
         }
+
+        
+        function playSound(text){
+            var msg = new SpeechSynthesisUtterance(text);
+            msg.lang = 'es-CO';
+            window.speechSynthesis.speak(msg); 
+
+
+        }
+        function play_all() {
+            
+            var msg = new SpeechSynthesisUtterance('escuche las preguntas');
+            msg.lang = 'es-CO';
+            window.speechSynthesis.speak(msg)
+            var questions = {{game.questions}}
+            for (element in questions) {
+                
+                msg = window.speechSynthesis.speak(element.name)
+                window.speechSynthesis.speak(msg)
+                msg= window.speechSynthesis.speak(element.statement)
+                window = window.speechSysnthesis.speak(msg)
+            }
+
+        }
+
+
+        
+        function play_first_question(){
+           
+            
+
+            var q = "{{game.questions.all.0.statement}}";
+            var msg = new SpeechSynthesisUtterance(q); 
+            msg.lang= 'es-CO'; 
+            window.speechSynthesis.speak(msg);
+            var op1 = "Opción 1: {{game.questions.all.0.answer_1}}";
+            var msg1 = new SpeechSynthesisUtterance(op1);
+            msg1.lang= 'es-CO';
+            window.speechSynthesis.speak(msg1);
+            var op2 = "Opcion 2: {{game.questions.all.0.answer_2}}";
+            var msg2= new SpeechSynthesisUtterance(op2); 
+            msg2.lang= 'es-CO';
+            window.speechSynthesis.speak(msg2);
+            var op3 = "Opción 3: {{game.questions.all.0.answer_3}}";
+            var msg3= new SpeechSynthesisUtterance(op3);
+            msg3.lang= 'es-CO';
+            window.speechSynthesis.speak(msg3);
+            var opciones = new SpeechSynthesisUtterance(op1 + op2 + op3);
+            
+        }
+
+        {% comment %} function play_next(idq){
+            questions = {{game.questions.all}}
+            for (q in questions){
+                if ( q.id == idq){
+                    console.log('FOUNDED');
+                }
+                else{
+                    
+                }
+            }
+        } {% endcomment %}
+
+
+
+
+       play_first_question()
+        
+
     </script>
 </div>
 {% endblock %}

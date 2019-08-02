@@ -1,4 +1,5 @@
 from django.shortcuts import render, get_object_or_404
+from django.template.response import TemplateResponse
 from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
@@ -11,7 +12,6 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from diufirstprocjet.celery import app
 from celery.task.control import revoke
 import pyttsx3 as tts
-import threading
 from apps.realtime.tasks import listenArduino
 
 @method_decorator(login_required, name='dispatch')
@@ -48,26 +48,25 @@ class GameDeleteView(PermissionRequiredMixin, DeleteView):
     permission_required = 'games.delete_game'
     success_url = reverse_lazy('games:games')
 
+# def my_render_callback(response):
+#     game = response.context_data['game']
+#     questions = Question.objects.filter(game=game)
+#     engine = tts.init()
+#     voices = engine.getProperty('voices')
+#     engine.setProperty('voice', 'spanish')
+#     engine.setProperty('rate', 140) 
+#     # engine.say('La página ya cargó')
+#     print (game)
+#     for q in questions : 
+#         engine.say(q.statement)
+       
+#     engine.runAndWait()
+#     engine.stop()
+
+
 def game_start(request, pk):
     game = get_object_or_404(Game, pk=pk)
-    preguntas = Question.objects.filter(game=game )
-    
-    
-    engine = tts.init()
-    voices = engine.getProperty('voices')
-    engine.setProperty('voice', 'spanish')
-    engine.setProperty('rate', 140) 
-    for q in preguntas : 
-        engine.say(str(q.question))
-        # for respuesta in list(q.answers):
-        #     engine.say(str(respuesta))
-
-    print(preguntas)
-    
-    print()
-    engine.runAndWait()
-    engine.stop()
-    return render(request, 'game_start.html', {'game':game})
+    return render(request, 'game_start.html', {'game': game})
     
 
 class PlayGameView(TemplateView):

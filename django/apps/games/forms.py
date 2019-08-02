@@ -15,5 +15,5 @@ class GameForm(forms.ModelForm):
 			'name',
 			'description',
 			'course',
-			'questions'
+			'topics'
 		)

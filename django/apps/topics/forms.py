@@ -17,6 +17,5 @@ class TopicForm(forms.ModelForm):
         'questions': 'Preguntas asociadas este tema',
         }
         widgets = {
-            'name': forms.TextInput(attrs={'class':'form-control'}),
-            'info': forms.TextInput(attrs={'class':'form-control'})
+            'name': forms.TextInput(attrs={'class':'form-control'})
         }

@@ -87,16 +87,16 @@
                       </li>
                       {% endif %}
 
-                      {% if perms.topics.view_tarjeta %}
+                      {% if perms.topics.view_topic %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Temas
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          {% if perms.topics.add_tarjeta %}
+                          {% if perms.topics.add_topic %}
                           <a class="dropdown-item" href="{% url 'topics:create' %}">Crear Tema</a>
                           {% endif %}
-                          {% if perms.topics.change_tarjeta %}
+                          {% if perms.topics.change_topic %}
                           <a class="dropdown-item" href="{% url 'topics:topics' %}">Temas</a>
                           {% endif %}
                         </div>

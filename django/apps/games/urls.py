@@ -10,6 +10,5 @@ urlpatterns = [
 	path('edit/<int:pk>', GameUpdateView.as_view(), name='edit'),
 	path('delete/<int:pk>', GameDeleteView.as_view(), name='delete'),
 	path('play_game/<int:pk>', PlayGameView.as_view(), name='play_game'),
-	path('game_start/<int:pk>', game_start, name='game_start')
-
+	path('read_text/', read_text, name='read_text')
 ]

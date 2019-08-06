@@ -12,7 +12,7 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from diufirstprocjet.celery import app
 from celery.task.control import revoke
 import pyttsx3 as tts
-from apps.realtime.tasks import listenArduino
+from apps.realtime.tasks import listenArduino, readText
 
 @method_decorator(login_required, name='dispatch')
 class GameListView(PermissionRequiredMixin, ListView):
@@ -46,42 +46,34 @@ class GameUpdateView(PermissionRequiredMixin, UpdateView):
 class GameDeleteView(PermissionRequiredMixin, DeleteView):
     model = Game
     permission_required = 'games.delete_game'
-    success_url = reverse_lazy('games:games')
-
-# def my_render_callback(response):
-#     game = response.context_data['game']
-#     questions = Question.objects.filter(game=game)
-#     engine = tts.init()
-#     voices = engine.getProperty('voices')
-#     engine.setProperty('voice', 'spanish')
-#     engine.setProperty('rate', 140) 
-#     # engine.say('La página ya cargó')
-#     print (game)
-#     for q in questions : 
-#         engine.say(q.statement)
-       
-#     engine.runAndWait()
-#     engine.stop()
-
-
-def game_start(request, pk):
-    game = get_object_or_404(Game, pk=pk)
-    return render(request, 'game_start.html', {'game': game})
-    
+    success_url = reverse_lazy('games:games')    
 
 class PlayGameView(TemplateView):
     template_name = 'play_game.html'
-
     def get_context_data(self, **kwargs):
         context = super(PlayGameView, self).get_context_data(**kwargs)
         context['game'] = get_object_or_404(Game, pk=self.kwargs.get('pk'))
+        app.control.purge()
         return context
 
     def post(self, request, *args, **kwargs):
         if self.request.POST.get('option') == '1':
+            app.control.purge()
             task_id = listenArduino.delay()
             return HttpResponse(task_id)
         elif self.request.POST.get('option') == '2':
             revoke(self.request.POST.get('task_id'), terminate=True)
             return HttpResponse('off')
         return HttpResponse('ok')
+
+def read_text(request):
+    text = request.POST.get("text")
+    key_topic = request.POST.get("key_topic")
+    key_question = request.POST.get("key_question")
+    to_read = request.POST.get("to_read")
+    task_id = readText.delay(text=text, key_topic=key_topic, key_question=key_question, to_read=to_read)
+    return HttpResponse(task_id)
+
+
+
+        

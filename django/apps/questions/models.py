@@ -12,4 +12,3 @@ class Question(models.Model):
 	video = models.CharField(blank=False, max_length=500)
 	def __str__(self):
 		return self.name
-    

@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Listado de calificaciones
+{% endblock %}
+
+{% block content %}
+    <a class="btn btn-info float-right" href="{% url 'califications:create' %}">Nueva calificacion</a>
+    <br>
+    <hr>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Estudiante</th>
+                <th>Pregunta</th>
+                <th>Partida</th>
+                <th>Nota</th>
+                <th class="text-center">Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for calification in object_list %}
+            <tr>
+                <td>{{ calification.student.first_name }}</td>
+                <td>{{ calification.question.name}}</td>
+                <td>{{ calification.game.name }}</td>
+                <td>{{ calification.note }}</td>
+                <td class="text-center">
+                    <a class="btn text-danger" href="{% url 'califications:edit' pk=calification.id %}"><i class="fas fa-edit"></i></a>
+                    <a class="btn text-info" href="{% url 'califications:detail' pk=calification.id %}"><i class="far fa-eye"></i></a>
+                    <button class="btn text-danger" data-toggle="modal" data-target="#delete_modal_{{ calification.id }}">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                    <div class="modal fade" id="delete_modal_{{ calification.id }}" tabindex="-1">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Esta seguro de elimiar la nota "{{ calification.note }}"
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{% url 'califications:delete' calification.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Aceptar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if califications.has_other_pages %}
+    <ul class="pagination">
+        {% if califications.has_previous %}
+        <li><a href="?page={{ califications.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in califications.paginator.page_range %}
+        {% if califications.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if califications.has_next %}
+        <li><a href="?page={{ califications.next_page_number }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+{% endblock %}

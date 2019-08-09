@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'apps.questions',
     'apps.courses',
     'apps.games',
+    'apps.califications',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',

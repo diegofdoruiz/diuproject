@@ -31,4 +31,5 @@ urlpatterns = [
     path('topics/', include('apps.topics.urls', namespace='topics')),
     path('courses/', include('apps.courses.urls', namespace='courses')),
     path('games/', include('apps.games.urls', namespace='games')),
+    path('califications/', include('apps.califications.urls', namespace='califications')),
 ]

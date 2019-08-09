@@ -102,6 +102,21 @@
                         </div>
                       </li> 
                       {% endif %}
+                      {% if perms.califications.view_calification %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Calificaciones
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.califications.add_calification %}
+                          <a class="dropdown-item" href="{% url 'califications:create' %}">Crear calificacion</a>
+                          {% endif %}
+                          {% if perms.califications.change_calification %}
+                          <a class="dropdown-item" href="{% url 'califications:calification' %}">Calificaciones</a>
+                          {% endif %}
+                        </div>
+                      </li> 
+                      {% endif %}
 
                       {% if perms.games.view_game %}
                       <li class="nav-item dropdown">

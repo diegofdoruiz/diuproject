@@ -20,7 +20,7 @@ Partida {{game.name}}
                         <p id="topic"></p>
                         <hr>
                         <p id="question"></p>
-                        <ol type="1">
+                        <ol id ="options" type="1">
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-1">
                                     <div class="input-group-prepend">
@@ -107,8 +107,21 @@ Partida {{game.name}}
                         current_key_question = 0;
                         if (nextTopic()){
                             console.log("next");
+                            waiting_topic=true;
+                            play_next_topic();
                         }else{
                             console.log("end");
+                            waiting_topic=false;
+                            waiting_answer=false;
+                            started=false;
+                            $("#div-answer-1").remove();
+                            $("#div-answer-2").remove();
+                            $("#div-answer-3").remove();
+                            $("#div-answer-4").remove();
+                            $("#div-answer-5").remove();
+                            $("#question").remove();
+                            $("#options").remove();
+                            finish();
                         }
                     }
                 }
@@ -276,7 +289,17 @@ Partida {{game.name}}
             welcome = welcome + "Por favor inicia el primer tema acercando una de las tarjetas que tienes en la mano izquierda";
             sendTextToRead(welcome, null, null, "welcome");
         }
+        //reproduccion de texto de despedida
+        function finish(){
+            var finish= "El juego ha finalizado";
+            sendTextToRead(finish, null, null, "checked");
+        }
 
+        function play_next_topic(){
+            var play = "Por favor, acerca la tarjeta de un tema nuevo al lector"; 
+            console.log(play);
+            sendTextToRead(play,null,null, "checked");
+        }
         //Se envía el texto para ser leído
         function sendTextToRead(text, key_topic=null, key_question=null, to_read){
             $.ajax({
@@ -309,6 +332,8 @@ Partida {{game.name}}
                 return false;
             }
         }
+
+        
 
         //Se verifica si hay una nueva pregunta del tema actual
         function nextQuestion(){

@@ -37,6 +37,8 @@ def listenArduino(self):
 @task(bind=True)
 def readText(self, text, key_topic, key_question, to_read):
 	engine = tts.init();
+	engine.setProperty('rate', 170)
+	engine.setProperty('voice', 'spanish')
 	engine.say(text)
 	engine.runAndWait()
 	engine.stop()

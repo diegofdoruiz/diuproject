@@ -13,6 +13,7 @@ from diufirstprocjet.celery import app
 from celery.task.control import revoke
 import pyttsx3 as tts
 from apps.realtime.tasks import listenArduino, readText
+from apps.califications.views import sendNote
 
 @method_decorator(login_required, name='dispatch')
 class GameListView(PermissionRequiredMixin, ListView):

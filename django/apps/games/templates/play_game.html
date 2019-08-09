@@ -20,7 +20,7 @@ Partida {{game.name}}
                         <p id="topic"></p>
                         <hr>
                         <p id="question"></p>
-                        <ol type="1">
+                        <ol id ="options" type="1">
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-1">
                                     <div class="input-group-prepend">
@@ -116,12 +116,34 @@ Partida {{game.name}}
                 if (nextQuestion()) {
                     current_key_question = parseInt(current_key_question) + 1;
                     prepareTextToRead(current_key_topic, current_key_question, "question");
-                } else {
-                    current_key_question = 0;
-                    if (nextTopic()) {
-                        console.log("next");
-                    } else {
-                        console.log("end");
+                }else if(started && to_read == "question"){
+                    waiting_answer = true;
+                }else if (started && to_read == "welcome"){
+                    waiting_topic = true;
+                }else if (started && to_read == "checked"){
+                    if (nextQuestion()){
+                        current_key_question = parseInt(current_key_question) + 1;
+                        prepareTextToRead(current_key_topic, current_key_question, "question");
+                    }else{
+                        current_key_question = 0;
+                        if (nextTopic()){
+                            console.log("next");
+                            waiting_topic=true;
+                            play_next_topic();
+                        }else{
+                            console.log("end");
+                            waiting_topic=false;
+                            waiting_answer=false;
+                            started=false;
+                            $("#div-answer-1").remove();
+                            $("#div-answer-2").remove();
+                            $("#div-answer-3").remove();
+                            $("#div-answer-4").remove();
+                            $("#div-answer-5").remove();
+                            $("#question").remove();
+                            $("#options").remove();
+                            finish();
+                        }
                     }
                 }
             }
@@ -286,8 +308,19 @@ Partida {{game.name}}
     console.log("{{user.id}}");
     var user_game = "{{user.id}}";
     var game_id = "{{game.id}}";
-    //enviarNota(3.7, current_key_question, user_game, game_id);
+    
+    function finish(){
+            var finish= "El juego ha finalizado";
+            sendTextToRead(finish, null, null, "checked");
+        }
 
+        function play_next_topic(){
+            var play = "Por favor, acerca la tarjeta de un tema nuevo al lector"; 
+            console.log(play);
+            sendTextToRead(play,null,null, "checked");
+        }
+
+    //enviarNota(3.7, current_key_question, user_game, game_id);
     function enviarNota(nota, question, user_game, game) {
         $.ajax({
             url: "{% url 'califications:sendNote' %}",

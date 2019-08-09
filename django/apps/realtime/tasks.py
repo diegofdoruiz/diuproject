@@ -15,7 +15,7 @@ def listenArduino(self):
 	arduino_message = ""
 	ser = serial.Serial()
 	ser.baudrate = 9600
-	ser.port = '/dev/ttyACM1'
+	ser.port = '/dev/ttyACM0'
 	try:
 		ser.open()
 		while True:
@@ -37,6 +37,8 @@ def listenArduino(self):
 @task(bind=True)
 def readText(self, text, key_topic, key_question, to_read):
 	engine = tts.init();
+	engine.setProperty('rate', 170)
+	engine.setProperty('voice', 'spanish')
 	engine.say(text)
 	engine.runAndWait()
 	engine.stop()

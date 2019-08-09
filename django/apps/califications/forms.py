@@ -7,9 +7,11 @@ class CalificationForm(forms.ModelForm):
         fields = (
             'note',
             'student',
+            'question',
         	'game',)
         labels = {
             'note':'Nota',
+            'question':'Pregunta',
             'student':'Estudiante',
             'game':'Partida',
         };

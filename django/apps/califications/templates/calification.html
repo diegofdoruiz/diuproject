@@ -12,6 +12,7 @@
         <thead>
             <tr>
                 <th>Estudiante</th>
+                <th>Pregunta</th>
                 <th>Partida</th>
                 <th>Nota</th>
                 <th class="text-center">Opciones</th>
@@ -21,6 +22,7 @@
             {% for calification in object_list %}
             <tr>
                 <td>{{ calification.student.first_name }}</td>
+                <td>{{ calification.question.name}}</td>
                 <td>{{ calification.game.name }}</td>
                 <td>{{ calification.note }}</td>
                 <td class="text-center">

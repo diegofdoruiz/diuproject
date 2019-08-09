@@ -24,34 +24,38 @@ Partida {{game.name}}
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-1">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><input type="radio" name="option_selected"/></span>
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
                                     </div>
-                                    <input type="text" class="form-control" id="answer_1">   
-                                </div>                                
+                                    <input type="text" class="form-control" id="answer_1">
+                                </div>
                             </li>
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-2">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><input type="radio" name="option_selected"/></span>
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
                                     </div>
-                                    <input type="text" class="form-control" id="answer_2">   
-                                </div>                                
+                                    <input type="text" class="form-control" id="answer_2">
+                                </div>
                             </li>
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-3">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><input type="radio" name="option_selected"/></span>
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
                                     </div>
-                                    <input type="text" class="form-control" id="answer_3">   
-                                </div>                                
+                                    <input type="text" class="form-control" id="answer_3">
+                                </div>
                             </li>
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-4">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text"><input type="radio" name="option_selected"/></span>
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
                                     </div>
-                                    <input type="text" class="form-control" id="answer_4">   
-                                </div>                                
+                                    <input type="text" class="form-control" id="answer_4">
+                                </div>
                             </li>
                         </ol>
                     </div>
@@ -64,7 +68,9 @@ Partida {{game.name}}
                         <input type="hidden" name="option" value="1">
                         <input type="hidden" name="task_id" value="">
                     </form>
-                    <button class="btn btn-block btn-warning action" value="on"> 
+                    <button class="btn btn-block btn-warning action" value="on">
+
+
                         Iniciar Partida
                     </button>
                 </div>
@@ -76,321 +82,369 @@ Partida {{game.name}}
 {% endblock %}
 
 {% block js %}
-    <!-- *******************************************************************************
+<!-- *******************************************************************************
     *************************** Comunicación e inicio de juego *************************
     *********************************************************************************-->
-    <script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
-    <script>
-        // Conectamos con el socket en el servidor de Node
-        var socket = io('ws://localhost:3000');
-
-        /* Cualquier mensaje que se reciba en el canal "result"
-        se agrega dentro del div "result" */
-        socket.on('result', function(data){
-            console.log('socker on');
-            var response = JSON.parse(data);
-            var type = response.type;
-            var to_read = response.to_read;
-            if (type == "reader") {
-                var key_topic = response.key_topic;
-                var key_question = response.key_question;
-                if(started && to_read == "topic"){
-                    console.log('esperando topic');
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script>
+    // Conectamos con el socket en el servidor de Node
+    var socket = io('ws://localhost:3000');
+    var promedio = 0;
+    /* Cualquier mensaje que se reciba en el canal "result"
+    se agrega dentro del div "result" */
+    socket.on('result', function (data) {
+        console.log('socker on');
+        var response = JSON.parse(data);
+        var type = response.type;
+        var to_read = response.to_read;
+        if (type == "reader") {
+            var suma = 0;
+            var preguntas = 0;
+            var key_topic = response.key_topic;
+            var key_question = response.key_question;
+            if (started && to_read == "topic") {
+                console.log('esperando topic');
+                prepareTextToRead(current_key_topic, current_key_question, "question");
+            } else if (started && to_read == "question") {
+                console.log('esperando respuesta');
+                waiting_answer = true;
+            } else if (started && to_read == "welcome") {
+                console.log(waiting_topic);
+                waiting_topic = true;
+                console.log(waiting_topic);
+            } else if (started && to_read == "checked") {
+                if (nextQuestion()) {
+                    current_key_question = parseInt(current_key_question) + 1;
                     prepareTextToRead(current_key_topic, current_key_question, "question");
-                }else if(started && to_read == "question"){
-                    console.log('esperando respuesta');
-                    waiting_answer = true;
-                }else if (started && to_read == "welcome"){
-                    console.log(waiting_topic);
-                    waiting_topic = true;
-                    console.log(waiting_topic);
-                }else if (started && to_read == "checked"){
-                    if (nextQuestion()){
-                        current_key_question = parseInt(current_key_question) + 1;
-                        prepareTextToRead(current_key_topic, current_key_question, "question");
-                    }else{
-                        current_key_question = 0;
-                        if (nextTopic()){
-                            console.log("next");
-                        }else{
-                            console.log("end");
-                        }
+                } else {
+                    current_key_question = 0;
+                    if (nextTopic()) {
+                        console.log("next");
+                    } else {
+                        console.log("end");
                     }
                 }
-            }else{
-                console.log(type);
-                if (waiting_topic){
-                    console.log(response.arduino_message)
-                    $("#result").append("<div>"+data+"</div>");
-                    for (var i = 0; i < topics_length; i++) {
-                        if(topics[i].card == response.arduino_message){
-                            prepareTextToRead(i, current_key_question, "topic");                            
-                            waiting_topic = false;
-                            break;
-                        } 
-                    }
-                }else if(waiting_answer){
-                    
-                    correct_answer = topics[current_key_topic].questions[current_key_question].correct_answer;
-                    is_correct = false;
-                    if (response.arduino_message == card_1){
-                        if (correct_answer == "answer_1") {
-                            $("#div-answer-1").addClass("alert-success");
-                            is_correct = true;
-                        }else{
-                            $("#div-answer-1").addClass("alert-danger");
-                        }
-                        $("#div-answer-1 input[type='radio']").prop("checked", true);
-                    }else if (response.arduino_message == card_2){
-                        if (correct_answer == "answer_2") {
-                            $("#div-answer-2").addClass("alert-success");
-                            is_correct = true;
-                        }else{
-                            $("#div-answer-2").addClass("alert-danger");
-                        }
-                        $("#div-answer-2 input[type='radio']").prop("checked", true);
-                    }else if (response.arduino_message == card_3){
-                        if (correct_answer == "answer_3") {
-                            $("#div-answer-3").addClass("alert-success");
-                            is_correct = true;
-                        }else{
-                            $("#div-answer-3").addClass("alert-danger");
-                        }
-                        $("#div-answer-3 input[type='radio']").prop("checked", true);
-                    }else if (response.arduino_message == card_4){
-                        if (correct_answer == "answer_4") {
-                            $("#div-answer-4").addClass("alert-success");
-                            is_correct = true;
-                        }else{
-                            $("#div-answer-4").addClass("alert-danger");
-                        }
-                        $("#div-answer-4 input[type='radio']").prop("checked", true);
-                    }else if (response.arduino_message == card_5){
-                        if (correct_answer == "answer_5") {
-                            $("#div-answer-5").addClass("alert-success");
-                            is_correct = true;
-                        }else{
-                            $("#div-answer-5").addClass("alert-danger");
-                        }
-                        $("#div-answer-5 input[type='radio']").prop("checked", true);
-                    }
-                    if(is_correct){
-                        sendTextToRead("Respuesta correcta", null, null, "checked");
-                    }else{
-                        $("#correct-answer").text(topics[current_key_topic].questions[current_key_question].correct_answer);
-                        sendTextToRead("Respuesta incorrecta", null, null, "checked");
-                    }
-                    waiting_answer = false;
-                }
-
-
-            } 
-        });
-
-        $(".action").click(function(){
-            if ($(this).val() == "on") {
-                $("#game-post-form input[name='option']").val("1");
-                $(".action").text("Terminar Partida");
-                $(".action").val("off");
-            }else if($(this).val() == "off"){
-                $("#game-post-form input[name='option']").val("2");
-                $(".action").text("Reiniciar Partida");
-                $(".action").val("on");
             }
-            $("#game-post-form").submit();
-        });
-
-        /* Cuando se presione el botón de submit se envía
-        una petición POST AJAX a la vista para ejecutar la tarea */
-        $("#game-post-form").submit(function (event) {
-            event.preventDefault();
-            $.ajax({
-                type: 'POST',
-                url: "{% url 'games:play_game' game.id %}",
-                data: $('form').serialize(),
-                success: function(celeryTaskId)
-                {
-                    /* La vista devuelve el ID de la tarea de Celery
-                    y se lo envíamos al server para que sepa a cuál canal
-                    suscribirse */
-                    if (celeryTaskId != "on" && celeryTaskId != "off" && celeryTaskId != "ok") {
-                        socket.emit('subscribe', celeryTaskId);
-                        $("#game-post-form input[name='task_id']").val(celeryTaskId);
-                        welcome();
+        } else {
+            console.log(type);
+            if (waiting_topic) {
+                var notas = [];
+                console.log(response.arduino_message)
+                $("#result").append("<div>" + data + "</div>");
+                for (var i = 0; i < topics_length; i++) {
+                    if (topics[i].card == response.arduino_message) {
+                        prepareTextToRead(i, current_key_question, "topic");
+                        waiting_topic = false;
+                        break;
                     }
                 }
-            });
-        });
-    </script>
+            } else if (waiting_answer) {
 
-    <!-- *******************************************************************************
+                correct_answer = topics[current_key_topic].questions[current_key_question].correct_answer;
+                is_correct = false;
+                if (response.arduino_message == card_1) {
+                    if (correct_answer == "answer_1") {
+                        $("#div-answer-1").addClass("alert-success");
+                        is_correct = true;
+                    } else {
+                        $("#div-answer-1").addClass("alert-danger");
+                    }
+                    $("#div-answer-1 input[type='radio']").prop("checked", true);
+                } else if (response.arduino_message == card_2) {
+                    if (correct_answer == "answer_2") {
+                        $("#div-answer-2").addClass("alert-success");
+                        is_correct = true;
+                    } else {
+                        $("#div-answer-2").addClass("alert-danger");
+                    }
+                    $("#div-answer-2 input[type='radio']").prop("checked", true);
+                } else if (response.arduino_message == card_3) {
+                    if (correct_answer == "answer_3") {
+                        $("#div-answer-3").addClass("alert-success");
+                        is_correct = true;
+                    } else {
+                        $("#div-answer-3").addClass("alert-danger");
+                    }
+                    $("#div-answer-3 input[type='radio']").prop("checked", true);
+                } else if (response.arduino_message == card_4) {
+                    if (correct_answer == "answer_4") {
+                        $("#div-answer-4").addClass("alert-success");
+                        is_correct = true;
+                    } else {
+                        $("#div-answer-4").addClass("alert-danger");
+                    }
+                    $("#div-answer-4 input[type='radio']").prop("checked", true);
+                } else if (response.arduino_message == card_5) {
+                    if (correct_answer == "answer_5") {
+                        $("#div-answer-5").addClass("alert-success");
+                        is_correct = true;
+                    } else {
+                        $("#div-answer-5").addClass("alert-danger");
+                    }
+                    $("#div-answer-5 input[type='radio']").prop("checked", true);
+                }
+                if (is_correct) {
+                    sendTextToRead("Respuesta correcta", null, null, "checked");
+                    notas.append(5);
+                    //enviarNota()
+                } else {
+                    $("#correct-answer").text(topics[current_key_topic].questions[current_key_question].correct_answer);
+                    sendTextToRead("Respuesta incorrecta", null, null, "checked");
+                    notas.append(1);
+                }
+                waiting_answer = false;
+                //AQui
+                console.log("{{user.id}}");
+                var user_game = "{{user.id}}";
+                var game_id = "{{game.id}}";
+                for (nota in notas) {                    
+                    enviarNota(nota, topics[current_key_topic].questions[current_key_question].id, user_game, game_id);
+                }
+
+            }
+
+
+        }
+    });
+
+
+    $(".action").click(function () {
+        if ($(this).val() == "on") {
+            $("#game-post-form input[name='option']").val("1");
+            $(".action").text("Terminar Partida");
+            $(".action").val("off");
+        } else if ($(this).val() == "off") {
+            $("#game-post-form input[name='option']").val("2");
+            $(".action").text("Reiniciar Partida");
+            $(".action").val("on");
+        }
+        $("#game-post-form").submit();
+    });
+
+    /* Cuando se presione el botón de submit se envía
+    una petición POST AJAX a la vista para ejecutar la tarea */
+    $("#game-post-form").submit(function (event) {
+        event.preventDefault();
+        $.ajax({
+            type: 'POST',
+            url: "{% url 'games:play_game' game.id %}",
+            data: $('form').serialize(),
+            success: function (celeryTaskId) {
+                /* La vista devuelve el ID de la tarea de Celery
+                y se lo envíamos al server para que sepa a cuál canal
+                suscribirse */
+                if (celeryTaskId != "on" && celeryTaskId != "off" && celeryTaskId != "ok") {
+                    socket.emit('subscribe', celeryTaskId);
+                    $("#game-post-form input[name='task_id']").val(celeryTaskId);
+                    welcome();
+                }
+            }
+        });
+    });
+</script>
+
+<!-- *******************************************************************************
     ****************************** Datos y lógica del juego ****************************
     *********************************************************************************-->
-    <script type="text/javascript">
+<script type="text/javascript">
 
-        //get all topics from jinja
-        var topics = {};
-        var counter_topics = 0;
-        {% for topic in game.topics.all %}
-            var topic = {};
-            var topic_number = counter_topics;
-            topic["id"] = "{{topic.id}}";
-            topic["name"] = "{{topic.name}}";
-            topic["info"] = "{{topic.info}}";
-            topic["card"] = "{{topic.card}}";
-            
-            var questions = {};
-            var counter_questions = 0;
-            {% for question in topic.questions.all %}
-                var question = {};
-                var question_number = counter_questions;
-                question['name'] = "{{question.name}}";
-                question['statement'] = "{{question.statement}}";
-                question['answer_1'] = "{{question.answer_1}}";
-                question['answer_2'] = "{{question.answer_2}}";
-                question['answer_3'] = "{{question.answer_3}}";
-                question['answer_4'] = "{{question.answer_4}}";
-                question['answer_5'] = "{{question.answer_5}}";
-                question['correct_answer'] = "{{question.correct_answer}}";
-                question['video'] = "{{question.video}}";
-                questions[question_number] = question;
-                counter_questions ++;
-            {% endfor %}
-            topic["questions"] = questions;
-            topics[topic_number] = topic;
-            counter_topics ++;
-        {% endfor %} 
+    //get all topics from jinja
+    var topics = {};
+    var counter_topics = 0;
+    {% for topic in game.topics.all %}
+    var topic = {};
+    var topic_number = counter_topics;
+    topic["id"] = "{{topic.id}}";
+    topic["name"] = "{{topic.name}}";
+    topic["info"] = "{{topic.info}}";
+    topic["card"] = "{{topic.card}}";
 
-        console.log(topics[0].questions);
+    var questions = {};
+    var counter_questions = 0;
+    {% for question in topic.questions.all %}
+    var question = {};
+    var question_number = counter_questions;
+    question['id'] = "{{question.id}}";
+    question['name'] = "{{question.name}}";
+    question['statement'] = "{{question.statement}}";
+    question['answer_1'] = "{{question.answer_1}}";
+    question['answer_2'] = "{{question.answer_2}}";
+    question['answer_3'] = "{{question.answer_3}}";
+    question['answer_4'] = "{{question.answer_4}}";
+    question['answer_5'] = "{{question.answer_5}}";
+    question['correct_answer'] = "{{question.correct_answer}}";
+    question['video'] = "{{question.video}}";
+    questions[question_number] = question;
+    counter_questions++;
+    {% endfor %}
+    topic["questions"] = questions;
+    topics[topic_number] = topic;
+    counter_topics++;
+    {% endfor %}
 
-        //Start Reading
-        var topics_length = Object.keys(topics).length;
-        var questions_length = Object.keys(questions).length;
-        var started = false;
-        var waiting_topic = false;
-        var waiting_answer = false;
-        var current_key_topic = 0;
-        var current_key_question = 0;
-        var reading = false;
-        //tarjetas para opciones de respuesta
-        var card_1  = "Card UID: 44 18 52 16\r\n";
-        var card_2  = "Card UID: F0 5E F2 18\r\n";
-        var card_3  = "Card UID: D4 E2 4E 16\r\n";
-        var card_4  = "Card UID: 06 1D 5C 0B\r\n";
+    //AQui
+    console.log("{{user.id}}");
+    var user_game = "{{user.id}}";
+    var game_id = "{{game.id}}";
+    //enviarNota(3.7, current_key_question, user_game, game_id);
 
-        //Saludo inicial al jugador
-        function welcome(){
-            var welcome = "Hola Efraín, eres bienvenido y gracias por participar. \n";
-            welcome = welcome + "Por favor inicia el primer tema acercando una de las tarjetas que tienes en la mano izquierda";
-            sendTextToRead(welcome, null, null, "welcome");
-        }
-
-        //Se envía el texto para ser leído
-        function sendTextToRead(text, key_topic=null, key_question=null, to_read){
-            $.ajax({
-                url: "{% url 'games:read_text' %}",
-                type: "POST",
-                data: {
-                    csrfmiddlewaretoken: "{{ csrf_token }}",
-                    text: text,
-                    key_topic: key_topic,
-                    key_question: key_question,
-                    to_read:to_read,
-                },
-                success: function(celeryTaskId) {
-                    // Suscribirse a un juego específico
-                    socket.emit('subscribe', celeryTaskId);
-                    reading = true;
-                    if(!started){
-                        started = true;
-                    }
-                }
-            });
-        }
-
-        //Se verifica si hay un nuevo tema
-        function nextTopic(){
-            next_key_topic = parseInt(current_key_topic) + 1;
-            if(topics.hasOwnProperty(next_key_topic)){
-                return true;
-            }else{
-                return false;
+    function enviarNota(nota, question, user_game, game) {
+        $.ajax({
+            url: "{% url 'califications:sendNote' %}",
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                nota: nota,
+                question: question,
+                user: user_game,
+                game: game_id,
+            },
+            //
+            success: function (response) {
+                alert("Tu nota es:"+ nota)
+                alert("pregunta es :"+current_key_question)
             }
-        }
+        });
+    };
 
-        //Se verifica si hay una nueva pregunta del tema actual
-        function nextQuestion(){
-            var current_topic = topics[current_key_topic];
-            next_key_question = parseInt(current_key_question) + 1;
-            if(current_topic.questions.hasOwnProperty(next_key_question)){
-                return true;
-            }else{
-                return false;
-            }
-        }
+    //Start Reading
+    var topics_length = Object.keys(topics).length;
+    var questions_length = Object.keys(questions).length;
+    var started = false;
+    var waiting_topic = false;
+    var waiting_answer = false;
+    var current_key_topic = 0;
+    var current_key_question = 0;
+    var reading = false;
+    //AQui llamado
+    {% for topic in game.topics.all %}
+    {% for question in topic.questions.all %}
+    console.log("pregunta: " + question.statement)
+    //enviarNota(4.5,question,null,null);
+    {% endfor %}
+    {% endfor %}
+    {% for user in users.objects.all %}
+    console.log(user.addres);
+    {% endfor %}
+    //tarjetas para opciones de respuesta
+    var card_1 = "Card UID: 44 18 52 16\r\n";
+    var card_2 = "Card UID: F0 5E F2 18\r\n";
+    var card_3 = "Card UID: D4 E2 4E 16\r\n";
+    var card_4 = "Card UID: 06 1D 5C 0B\r\n";
 
-        //Se prepara el texto que se va a leer, topic o question
-        function prepareTextToRead(topic_key, question_key, to_read){
-            var text = "";
-            if (to_read == "topic"){
-                text = topics[topic_key].info + "\n";
-                //Mostrar tema
-                $("#topic").text(text);
-            }else if (to_read == "question"){
-                text = text + "Pregunta "+(parseInt(current_key_question+1))+". \n"; 
-                text = text + topics[topic_key].questions[question_key].statement + "\n"; 
-                //Mostrar pregunta
-                $("#question").text(text);
-                if (topics[topic_key].questions[question_key].answer_1 != "None"){
-                    text = text + "Opción. \n. \n. \n. \n 1. \n. \n. \n. \n. \n. \n";
-                    text = text + topics[topic_key].questions[question_key].answer_1 + "\n";
-                    //Mostrar respuesta 1
-                    $("#answer_1").val(topics[topic_key].questions[question_key].answer_1);
-                    $("#div-answer-1").removeClass("alert-success");
-                    $("#div-answer-1").removeClass("alert-danger");
-                    $("#div-answer-1 input[type='radio']").prop("checked", false);
-                }
-                if (topics[topic_key].questions[question_key].answer_2 != "None"){
-                    text = text + "Opción. \n .\n .\n .\n  2. \n .\n .\n .\n .\n .\n ";
-                    text = text + topics[topic_key].questions[question_key].answer_2 + "\n";
-                    //Mostrar respuesta 2
-                    $("#answer_2").val(topics[topic_key].questions[question_key].answer_2);
-                    $("#div-answer-2").removeClass("alert-success");
-                    $("#div-answer-2").removeClass("alert-danger");
-                    $("#div-answer-2 input[type='radio']").prop("checked", false);
-                }
-                if (topics[topic_key].questions[question_key].answer_3 != "None"){
-                    text = text + "Opción. \n .\n .\n .\n  3. \n .\n .\n .\n .\n .\n ";
-                    text = text + topics[topic_key].questions[question_key].answer_3 + "\n";
-                    //Mostrar respuesta 3
-                    $("#answer_3").val(topics[topic_key].questions[question_key].answer_3);
-                    $("#div-answer-3").removeClass("alert-success");
-                    $("#div-answer-3").removeClass("alert-danger");
-                    $("#div-answer-3 input[type='radio']").prop("checked", false);
-                }
-                if (topics[topic_key].questions[question_key].answer_4 != "None"){
-                    text = text + "Opción. \n .\n .\n .\n  4. \n .\n .\n .\n .\n .\n ";
-                    text = text + topics[topic_key].questions[question_key].answer_4 + "\n";
-                    //Mostrar respuesta 4
-                    $("#answer_4").val(topics[topic_key].questions[question_key].answer_4);
-                    $("#div-answer-4").removeClass("alert-success");
-                    $("#div-answer-4").removeClass("alert-danger");
-                    $("#div-answer-4 input[type='radio']").prop("checked", false);
-                }
-                if (topics[topic_key].questions[question_key].answer_5 != "None"){
-                    text = text + "Opción. \n .\n .\n .\n  5. \n .\n .\n .\n .\n .\n ";
-                    text = text + topics[topic_key].questions[question_key].answer_5 + "\n";
-                    //Mostrar respuesta 5
-                    $("#answer_5").val(topics[topic_key].questions[question_key].answer_5);
-                    $("#div-answer-5").removeClass("alert-success");
-                    $("#div-answer-5").removeClass("alert-danger");
-                    $("#div-answer-5 input[type='radio']").prop("checked", false);
+    //Saludo inicial al jugador
+    function welcome() {
+        var welcome = "Hola Efraín, eres bienvenido y gracias por participar. \n";
+        welcome = welcome + "Por favor inicia el primer tema acercando una de las tarjetas que tienes en la mano izquierda";
+        sendTextToRead(welcome, null, null, "welcome");
+    }
+
+    //Se envía el texto para ser leído
+    function sendTextToRead(text, key_topic = null, key_question = null, to_read) {
+        $.ajax({
+            url: "{% url 'games:read_text' %}",
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                text: text,
+                key_topic: key_topic,
+                key_question: key_question,
+                to_read: to_read,
+            },
+            success: function (celeryTaskId) {
+                // Suscribirse a un juego específico
+                socket.emit('subscribe', celeryTaskId);
+                reading = true;
+                if (!started) {
+                    started = true;
                 }
             }
-            $("#correct-answer").text("");
-            sendTextToRead(text, topic_key, question_key, to_read);
-            $("#topic-data").css("display", "inline");
-        }
+        });
+    }
 
-    </script>
+    //Se verifica si hay un nuevo tema
+    function nextTopic() {
+        next_key_topic = parseInt(current_key_topic) + 1;
+        if (topics.hasOwnProperty(next_key_topic)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Se verifica si hay una nueva pregunta del tema actual
+    function nextQuestion() {
+        var current_topic = topics[current_key_topic];
+        next_key_question = parseInt(current_key_question) + 1;
+        if (current_topic.questions.hasOwnProperty(next_key_question)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //Se prepara el texto que se va a leer, topic o question
+    function prepareTextToRead(topic_key, question_key, to_read) {
+        var text = "";
+        if (to_read == "topic") {
+            text = topics[topic_key].info + "\n";
+            //Mostrar tema
+            $("#topic").text(text);
+        } else if (to_read == "question") {
+            text = text + "Pregunta " + (parseInt(current_key_question + 1)) + ". \n";
+            text = text + topics[topic_key].questions[question_key].statement + "\n";
+            //Mostrar pregunta
+            $("#question").text(text);
+            if (topics[topic_key].questions[question_key].answer_1 != "None") {
+                text = text + "Opción. \n. \n. \n. \n 1. \n. \n. \n. \n. \n. \n";
+                text = text + topics[topic_key].questions[question_key].answer_1 + "\n";
+                //Mostrar respuesta 1
+                $("#answer_1").val(topics[topic_key].questions[question_key].answer_1);
+                $("#div-answer-1").removeClass("alert-success");
+                $("#div-answer-1").removeClass("alert-danger");
+                $("#div-answer-1 input[type='radio']").prop("checked", false);
+            }
+            if (topics[topic_key].questions[question_key].answer_2 != "None") {
+                text = text + "Opción. \n .\n .\n .\n  2. \n .\n .\n .\n .\n .\n ";
+                text = text + topics[topic_key].questions[question_key].answer_2 + "\n";
+                //Mostrar respuesta 2
+                $("#answer_2").val(topics[topic_key].questions[question_key].answer_2);
+                $("#div-answer-2").removeClass("alert-success");
+                $("#div-answer-2").removeClass("alert-danger");
+                $("#div-answer-2 input[type='radio']").prop("checked", false);
+            }
+            if (topics[topic_key].questions[question_key].answer_3 != "None") {
+                text = text + "Opción. \n .\n .\n .\n  3. \n .\n .\n .\n .\n .\n ";
+                text = text + topics[topic_key].questions[question_key].answer_3 + "\n";
+                //Mostrar respuesta 3
+                $("#answer_3").val(topics[topic_key].questions[question_key].answer_3);
+                $("#div-answer-3").removeClass("alert-success");
+                $("#div-answer-3").removeClass("alert-danger");
+                $("#div-answer-3 input[type='radio']").prop("checked", false);
+            }
+            if (topics[topic_key].questions[question_key].answer_4 != "None") {
+                text = text + "Opción. \n .\n .\n .\n  4. \n .\n .\n .\n .\n .\n ";
+                text = text + topics[topic_key].questions[question_key].answer_4 + "\n";
+                //Mostrar respuesta 4
+                $("#answer_4").val(topics[topic_key].questions[question_key].answer_4);
+                $("#div-answer-4").removeClass("alert-success");
+                $("#div-answer-4").removeClass("alert-danger");
+                $("#div-answer-4 input[type='radio']").prop("checked", false);
+            }
+            if (topics[topic_key].questions[question_key].answer_5 != "None") {
+                text = text + "Opción. \n .\n .\n .\n  5. \n .\n .\n .\n .\n .\n ";
+                text = text + topics[topic_key].questions[question_key].answer_5 + "\n";
+                //Mostrar respuesta 5
+                $("#answer_5").val(topics[topic_key].questions[question_key].answer_5);
+                $("#div-answer-5").removeClass("alert-success");
+                $("#div-answer-5").removeClass("alert-danger");
+                $("#div-answer-5 input[type='radio']").prop("checked", false);
+            }
+        }
+        $("#correct-answer").text("");
+        sendTextToRead(text, topic_key, question_key, to_read);
+        $("#topic-data").css("display", "inline");
+    }
+
+</script>
 {% endblock %}

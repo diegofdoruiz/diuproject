@@ -90,6 +90,9 @@ Partida {{game.name}}
     // Conectamos con el socket en el servidor de Node
     var socket = io('ws://localhost:3000');
     var promedio = 0;
+    var notas = [];
+
+
     /* Cualquier mensaje que se reciba en el canal "result"
     se agrega dentro del div "result" */
     socket.on('result', function (data) {
@@ -109,11 +112,11 @@ Partida {{game.name}}
                 console.log('esperando respuesta');
                 waiting_answer = true;
             } else if (started && to_read == "welcome") {
-                console.log(waiting_topic);
                 waiting_topic = true;
                 console.log(waiting_topic);
             } else if (started && to_read == "checked") {
                 if (nextQuestion()) {
+                 
                     current_key_question = parseInt(current_key_question) + 1;
                     prepareTextToRead(current_key_topic, current_key_question, "question");
                 }else if(started && to_read == "question"){
@@ -122,6 +125,12 @@ Partida {{game.name}}
                     waiting_topic = true;
                 }else if (started && to_read == "checked"){
                     if (nextQuestion()){
+                        var user_game = "{{user.id}}";
+                        var game_id = "{{game.id}}";
+                        for (var i = 0; i<notas.length; i++) {  
+                            console.log(notas[i]);                  
+                            enviarNota(notas[i], topics[current_key_topic].questions[current_key_question].id, user_game, game_id);
+                        }
                         current_key_question = parseInt(current_key_question) + 1;
                         prepareTextToRead(current_key_topic, current_key_question, "question");
                     }else{
@@ -134,7 +143,6 @@ Partida {{game.name}}
                             console.log("end");
                             waiting_topic=false;
                             waiting_answer=false;
-                            started=false;
                             $("#div-answer-1").remove();
                             $("#div-answer-2").remove();
                             $("#div-answer-3").remove();
@@ -145,16 +153,19 @@ Partida {{game.name}}
                             finish();
                         }
                     }
+                }else if(started && to_read == "next"){
+                    waiting_topic = true;
+                    waiting_answer=false;
                 }
             }
         } else {
             console.log(type);
             if (waiting_topic) {
-                var notas = [];
-                console.log(response.arduino_message)
+                
                 $("#result").append("<div>" + data + "</div>");
                 for (var i = 0; i < topics_length; i++) {
-                    if (topics[i].card == response.arduino_message) {
+                    if (topics[i].card == response.arduino_message && !topics[i].status) {
+                        current_key_topic = i;
                         prepareTextToRead(i, current_key_question, "topic");
                         waiting_topic = false;
                         break;
@@ -207,21 +218,17 @@ Partida {{game.name}}
                 }
                 if (is_correct) {
                     sendTextToRead("Respuesta correcta", null, null, "checked");
-                    notas.append(5);
-                    //enviarNota()
+                    notas.push(5);
+                    enviardos();
                 } else {
                     $("#correct-answer").text(topics[current_key_topic].questions[current_key_question].correct_answer);
                     sendTextToRead("Respuesta incorrecta", null, null, "checked");
-                    notas.append(1);
+                    notas.push(1);
+                    enviardos();
                 }
                 waiting_answer = false;
                 //AQui
-                console.log("{{user.id}}");
-                var user_game = "{{user.id}}";
-                var game_id = "{{game.id}}";
-                for (nota in notas) {                    
-                    enviarNota(nota, topics[current_key_topic].questions[current_key_question].id, user_game, game_id);
-                }
+                
 
             }
 
@@ -280,6 +287,7 @@ Partida {{game.name}}
     topic["name"] = "{{topic.name}}";
     topic["info"] = "{{topic.info}}";
     topic["card"] = "{{topic.card}}";
+    topic["status"] = false;
 
     var questions = {};
     var counter_questions = 0;
@@ -311,34 +319,16 @@ Partida {{game.name}}
     
     function finish(){
             var finish= "El juego ha finalizado";
-            sendTextToRead(finish, null, null, "checked");
+            sendTextToRead(finish, null, null, "finish");
         }
 
         function play_next_topic(){
             var play = "Por favor, acerca la tarjeta de un tema nuevo al lector"; 
             console.log(play);
-            sendTextToRead(play,null,null, "checked");
+            sendTextToRead(play,null,null, "next");
         }
 
-    //enviarNota(3.7, current_key_question, user_game, game_id);
-    function enviarNota(nota, question, user_game, game) {
-        $.ajax({
-            url: "{% url 'califications:sendNote' %}",
-            type: "POST",
-            data: {
-                csrfmiddlewaretoken: "{{ csrf_token }}",
-                nota: nota,
-                question: question,
-                user: user_game,
-                game: game_id,
-            },
-            //
-            success: function (response) {
-                alert("Tu nota es:"+ nota)
-                alert("pregunta es :"+current_key_question)
-            }
-        });
-    };
+
 
     //Start Reading
     var topics_length = Object.keys(topics).length;
@@ -368,7 +358,10 @@ Partida {{game.name}}
     //Saludo inicial al jugador
     function welcome() {
         var welcome = "Hola Efraín, eres bienvenido y gracias por participar. \n";
-        welcome = welcome + "Por favor inicia el primer tema acercando una de las tarjetas que tienes en la mano izquierda";
+        welcome = welcome + "Para escuchar para escuchar la información un tema, identifica las tarjetas con marcas horizontales\n\n\n\n\n\n\n";
+        welcome = welcome + "Para responder una pregunta, identifica las opciones de tarjeta\n\n\n\n\n\n\n"; 
+        welcome = welcome + "Las marcas en las tarjetas de los temas son verticales, y las marcas en las tarjetas de opciones de respuesta son horizontales\n\n\n\n\n\n\n";
+        welcome = welcome + "Por favor inicia el primer tema acercando una de las tarjetas que tienes en la mano izquierda\n\n\n\n\n\n\n";
         sendTextToRead(welcome, null, null, "welcome");
     }
 
@@ -397,11 +390,10 @@ Partida {{game.name}}
 
     //Se verifica si hay un nuevo tema
     function nextTopic() {
-        next_key_topic = parseInt(current_key_topic) + 1;
-        if (topics.hasOwnProperty(next_key_topic)) {
-            return true;
-        } else {
-            return false;
+        for (var i = 0; i < topics_length; i++) {
+            if (topics[i].status == false) {
+                return true;
+            }
         }
     }
 
@@ -421,6 +413,7 @@ Partida {{game.name}}
         var text = "";
         if (to_read == "topic") {
             text = topics[topic_key].info + "\n";
+            topics[topic_key]["status"] = true;
             //Mostrar tema
             $("#topic").text(text);
         } else if (to_read == "question") {
@@ -477,6 +470,36 @@ Partida {{game.name}}
         $("#correct-answer").text("");
         sendTextToRead(text, topic_key, question_key, to_read);
         $("#topic-data").css("display", "inline");
+    }
+
+    //notas.push("1");
+    //enviarNota(3.7, current_key_question, user_game, game_id);
+    function enviarNota(nota, question, user_game, game) {
+        $.ajax({
+            url: "{% url 'califications:sendNote' %}",
+            type: "POST",
+            data: {
+                csrfmiddlewaretoken: "{{ csrf_token }}",
+                nota: nota,
+                question: question,
+                user: user_game,
+                game: game_id,
+            },
+            //
+            success: function (response) {
+                //alert("Tu nota es:"+ nota);
+            }
+        });
+    };
+
+    var user_game = "{{user.id}}";
+    var game_id = "{{game.id}}";
+
+    function enviardos(){
+        for (var i = 0; i<notas.length; i++) {  
+            console.log(notas[i]);                  
+            enviarNota(notas[i], topics[current_key_topic].questions[current_key_question].id, user_game, game_id);
+        }
     }
 
 </script>

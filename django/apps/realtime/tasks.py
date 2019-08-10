@@ -15,7 +15,7 @@ def listenArduino(self):
 	arduino_message = ""
 	ser = serial.Serial()
 	ser.baudrate = 9600
-	ser.port = '/dev/ttyACM0'
+	ser.port = '/dev/cu.usbmodem14101'
 	try:
 		ser.open()
 		while True:

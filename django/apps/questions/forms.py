@@ -1,20 +1,22 @@
 from apps.questions.models import *
 from django import forms
-
+        
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = (
-        	'question',
-            'video')
-        widgets = {
-        }
-
-class AnswerForm(forms.ModelForm):
-    class Meta:
-        model = Answer
-        fields = (
-        	'question',
-            'option')
-        widgets = {
+            'id',
+            'name',
+        	'statement',
+            'video',
+            'answer_1',
+            'answer_2',
+            'answer_3',
+            'answer_4',
+            'answer_5',
+            'correct_answer')
+        labels = {
+            'name':'Nombre',
+            'statement':'Enunciado',
+            'video':'Multimedia',
         }

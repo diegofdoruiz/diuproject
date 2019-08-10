@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
+  
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css" integrity="sha384-UHRtZLI+pbxtHCWp1t77Bi1L4ZtiqrqD80Kn4Z8NTSRyMA2Fd33n5dQ8lWUE00s/" crossorigin="anonymous">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <title>{% block page_title %}{% endblock %}</title>
 </head>
 <body>
@@ -21,44 +23,117 @@
                       <!-- <li class="nav-item active">
                         <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
                       </li> -->
-                      <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Usuarios
-                        </a>
-                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="{% url 'users:create' %}">Crear Usuario</a>
-                          <a class="dropdown-item" href="{% url 'users:users' %}">Usuarios</a>
-                        </div>
-                      </li> 
+                      {% if perms.roles.view_role %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Roles
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.roles.add_role %}
                           <a class="dropdown-item" href="{% url 'roles:create' %}">Crear Role</a>
+                          {% endif %}
+                          {% if perms.roles.change_role %}
                           <a class="dropdown-item" href="{% url 'roles:roles' %}">Roles</a>
+                          {% endif %}
                         </div>
                       </li>
+                      {% endif %}
+                      
+                      {% if perms.users.view_user %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Usuarios
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.users.add_user %}
+                          <a class="dropdown-item" href="{% url 'users:create' %}">Crear Usuario</a>
+                          {% endif %}
+                          {% if perms.users.change_user %}
+                          <a class="dropdown-item" href="{% url 'users:users' %}">Usuarios</a>
+                          {% endif %}
+                        </div>
+                      </li>
+                      {% endif %}
+
+                      {% if perms.courses.view_course %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Cursos
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.courses.add_course %}
+                          <a class="dropdown-item" href="{% url 'courses:create' %}">Crear Curso</a>
+                          {% endif %}
+                          {% if perms.courses.change_course %}
+                          <a class="dropdown-item" href="{% url 'courses:courses' %}">Cursos</a>
+                          {% endif %}
+                        </div>
+                      </li>
+                      {% endif %}
+
+                      {% if perms.questions.view_question %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                           Preguntas
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.questions.add_question %}
                           <a class="dropdown-item" href="{% url 'questions:create' %}">Crear Pregunta</a>
+                          {% endif %}
+                          {% if perms.questions.change_question %}
                           <a class="dropdown-item" href="{% url 'questions:question' %}">Preguntas</a>
-                          <a class="dropdown-item" href="{% url 'questions:createAnswer' %}">Crear Respuesta</a>
-                          <a class="dropdown-item" href="{% url 'questions:listAnswer' %}">Respuestas</a>
+                          {% endif %}
                         </div>
                       </li>
+                      {% endif %}
+
+                      {% if perms.topics.view_topic %}
                       <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                          Personajes
+                          Temas
                         </a>
                         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-                          <a class="dropdown-item" href="{% url 'tarjetas:create' %}">Crear Personaje</a>
-                          <a class="dropdown-item" href="{% url 'tarjetas:personajes' %}">Personajes</a>
+                          {% if perms.topics.add_topic %}
+                          <a class="dropdown-item" href="{% url 'topics:create' %}">Crear Tema</a>
+                          {% endif %}
+                          {% if perms.topics.change_topic %}
+                          <a class="dropdown-item" href="{% url 'topics:topics' %}">Temas</a>
+                          {% endif %}
                         </div>
-                      </li>                    
+                      </li> 
+                      {% endif %}
+                      {% if perms.califications.view_calification %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Calificaciones
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.califications.add_calification %}
+                          <a class="dropdown-item" href="{% url 'califications:create' %}">Crear calificacion</a>
+                          {% endif %}
+                          {% if perms.califications.change_calification %}
+                          <a class="dropdown-item" href="{% url 'califications:calification' %}">Calificaciones</a>
+                          {% endif %}
+                        </div>
+                      </li> 
+                      {% endif %}
+
+                      {% if perms.games.view_game %}
+                      <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          Partidas
+                        </a>
+                        <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                          {% if perms.games.add_game %}
+                          <a class="dropdown-item" href="{% url 'games:create' %}">Crear Partida</a>
+                          {% endif %}
+                          {% if perms.games.change_game %}
+                          <a class="dropdown-item" href="{% url 'games:games' %}">Partidas</a>
+                          {% endif %}
+                        </div>
+                      </li> 
+                      {% endif %}
+
                     </ul>
                     <ul class="navbar-nav ml-auto nav-flex-icons">
                       <li class="nav-item dropdown">
@@ -89,7 +164,7 @@
                   </form> -->
                 </div>
               </nav>
-              <div class="container" style="padding-top: 3rem;">
+              <div class="container" style="padding-top: 0.5rem;">
         {% block content %}
             <h1>Bienvenido a la franquicia {{ request.tenant.schema_name }}</h1>
         {% endblock %}
@@ -97,9 +172,13 @@
     </div>
 </body>
 <footer>
-        <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+        <script
+        src="https://code.jquery.com/jquery-3.4.1.min.js"
+        integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+        crossorigin="anonymous"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
         {% block js %}
         {% endblock %}
 </footer>

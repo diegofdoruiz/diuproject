@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Listado de partidas
+{% endblock %}
+
+{% block content %}
+    <a class="btn btn-info float-right" href="{% url 'games:create' %}">Nueva Partida</a>
+    <br>
+    <hr>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th class="text-center">Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for game in object_list %}
+            <tr>
+                <td>{{ game.name }}</td>
+                <td>{{ game.description }}</td>
+                <td class="text-center">
+                    <a class="btn text-danger" href="{% url 'games:edit' pk=game.id %}"><i class="fas fa-edit"></i></a>
+                    <a class="btn text-info" href="{% url 'games:detail' pk=game.id %}"><i class="far fa-eye"></i></a>
+                    <button class="btn text-danger" data-toggle="modal" data-target="#delete_modal_{{ game.id }}">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                    <div class="modal fade" id="delete_modal_{{ game.id }}" tabindex="-1">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    Esta seguro de elimiar la partida "{{ game.name }}"?
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{% url 'games:delete' game.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Aceptar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if games.has_other_pages %}
+    <ul class="pagination">
+        {% if games.has_previous %}
+        <li><a href="?page={{ games.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in games.paginator.page_range %}
+        {% if games.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if games.has_next %}
+        <li><a href="?page={{ games.next_page_number }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+{% endblock %}

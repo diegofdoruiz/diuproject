@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Listado de Temas
+{% endblock %}
+
+{% block content %}
+    <a class="btn btn-info float-right" href="{% url 'topics:create' %}">Nuevo Tema </a>
+    <br>
+    <hr>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Nombre de Tema </th>
+                <th>Información</th>
+                <th class="text-center">Opciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for topic in object_list %}
+            <tr>
+                <td>{{ topic.name }}</td>
+                <td>{{ topic.info }}</td>
+                <td class="text-center">
+                    <a class="btn text-danger" href="{% url 'topics:edit' pk=topic.id %}"><i class="fas fa-edit"></i></a>
+                    <a class="btn text-info" href="{% url 'topics:detail' pk=topic.id %}"><i class="far fa-eye"></i></a>
+                    <button class="btn text-danger" data-toggle="modal" data-target="#delete_modal_{{ topic.id }}">
+                        <i class="far fa-trash-alt"></i>
+                    </button>
+                    <div class="modal fade" id="delete_modal_{{ topic.id }}" tabindex="-1">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Eliminar</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    ¿Está seguro de elimiar el tema  "{{ topic.name }}"? 
+                                </div>
+                                <div class="modal-footer">
+                                    <form action="{% url 'topics:delete' topic.id %}" method="POST">
+                                        {% csrf_token %}
+                                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                                        <button type="submit" class="btn btn-danger">Aceptar</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if topic.has_other_pages %}
+    <ul class="pagination">
+        {% if topic.has_previous %}
+        <li><a href="?page={{ topic.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in topic.paginator.page_range %}
+        {% if topic.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+        {% else %}
+        <li><a href="?page={{ i }}">{{ i }}</a></li>
+        {% endif %}
+        {% endfor %}
+        {% if topic.has_next %}
+        <li><a href="?page={{ topic.next_page_number }}">&raquo;</a></li>
+        {% else %}
+        <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+    </ul>
+    {% endif %}
+{% endblock %}

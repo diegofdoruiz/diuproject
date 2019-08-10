@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+    Detalle de la partida
+{% endblock %}
+
+{% block content %}
+<div class="container">
+	<div class="row">
+		<div class="col-lg-6 col-md-6 col-sm-12">
+			<div class="form-group">
+				<label>Nombre</label>
+				<input type="text" value="{{game.name}}" class="form-control">
+			</div>
+			<div class="form-group">
+				<label>Descripción</label>
+				<input type="text" value="{{game.description}}" class="form-control">
+			</div>
+			<div class="form-group">
+				<label>Curso</label>
+				<input type="text" value="{{game.course}}" class="form-control">
+			</div>
+			<hr>
+			<div class="form-group">
+				<label>Preguntas</label>
+				<ul>
+					{% for question in game.questions.all %}
+						<li>{{question.name}}</li>
+					{% endfor %}
+				</ul>
+			</div>
+		</div>
+	</div>
+</div>
+{% endblock %}

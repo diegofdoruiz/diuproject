@@ -29,6 +29,27 @@ docker exec -it diuproject_db_1 psql -U diu
 //Cambiar a DB
 \c postgres
 
+docker-compose run django python manage.py makemigrations
+docker-compose run django python manage.py migrate
+
+docker-compose run django python manage.py createsuperuser
+
+se deben crear los roles, administrador, docente y estudiante
+
+
+
+/********* Intrucciones fuera de docker ************/
+Consola 1
+npm install
+npm install redis --save
+npm install redis-server --save
+npm start
+
+consola 2
+todo lo normal de django, migrations, migrate, runserver.
+
+consola 3
+celery worker -A diufirstprocjet -l info
 
 
 

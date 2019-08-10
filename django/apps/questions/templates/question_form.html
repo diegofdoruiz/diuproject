@@ -5,9 +5,168 @@
 {% endblock %}
 
 {% block content %}
-    <form method="POST">
-        {% csrf_token %}
-        {% bootstrap_form form %}
-        <input type="submit" class="btn btn-warning">
-    </form>
+	<div class="container h-100">
+	    <div class="row align-items-center h-100">
+	        <div class="col-8 mx-auto">
+	            <div class="jumbotron" style="padding-top: 0.5rem;">
+	            	<h4 class="text-center">Nueva Pregunta</h4>
+	            	<form method="POST" id="create-question-form">
+	            		{% csrf_token %}
+	            		{% bootstrap_field form.name %}
+	            		{% bootstrap_field form.statement %}
+	            		{% bootstrap_field form.video %}
+		            	<hr>
+
+		            	{% if form.instance.name %}
+		            		<h3>Respuestas</h3>
+		            	{% else %}
+		            		<h3>Agregar Respuestas</h3>
+		            	{% endif %}
+
+		            	<div class="form-group">
+			            	<button type="button" id="add-answer" class="btn btn-link">
+			            		Agregar respuesta  <i class="fas fa-plus"></i>
+			            	</button>
+			            	<div id="answer-1" style="display:{% if form.instance.answer_1 %}inline{% else %}none{% endif %};">
+			            		<div class="input-group mb-3">
+			            			<div class="input-group-prepend">
+			            				<div class="input-group-text">
+			            					<input 
+			            					type="radio" 
+			            				 	name="correct_answer" 
+			            				 	value="answer_1"
+			            				 	{% if form.instance.correct_answer == 'answer_1' %} checked {% endif %}>
+			            				</div>
+			            			</div>
+			            			<input 
+			            			type="text" 
+			            			class="form-control" 
+			            			name="answer_1"
+			            			value="{% if form.instance.answer_1 %}{{form.instance.answer_1}}{% endif %}">
+			            		</div>
+			            	</div>
+			            	<div id="answer-2" style="display:{% if form.instance.answer_2 %}inline{% else %}none{% endif %};">
+				            	<div class="input-group mb-3">
+				            		<div class="input-group-prepend">
+				            			<div class="input-group-text">
+				            				<input type="radio" 
+				            				name="correct_answer" 
+				            				value="answer_2"
+				            				{% if form.instance.correct_answer == 'answer_2' %} checked {% endif %}>
+				            			</div>
+				            		</div>
+				            		<input 
+				            		type="text" 
+				            		class="form-control" 
+				            		name="answer_2" 
+				            		value="{% if form.instance.answer_2 %}{{form.instance.answer_2}}{% endif %}">
+				            	</div>
+				            </div>
+				            <div id="answer-3" style="display:{% if form.instance.answer_3 %}inline{% else %}none{% endif %};">
+				            	<div class="input-group mb-3" >
+				            		<div class="input-group-prepend">
+				            			<div class="input-group-text">
+				            				<input 
+				            				type="radio" 
+				            				name="correct_answer" 
+				            				value="answer_3"
+				            				{% if form.instance.correct_answer == 'answer_3' %} checked {% endif %}>
+				            			</div>
+				            		</div>
+				            		<input 
+				            		type="text" 
+				            		class="form-control" 
+				            		name="answer_3"
+				            		value="{% if form.instance.answer_3 %}{{form.instance.answer_3}}{% endif %}">
+				            	</div>
+				            </div>
+				            <div id="answer-4" style="display:{% if form.instance.answer_4 %}inline{% else %}none{% endif %};">
+				            	<div class="input-group mb-3">
+				            		<div class="input-group-prepend">
+				            			<div class="input-group-text">
+				            				<input 
+				            				type="radio" 
+				            				name="correct_answer" 
+				            				value="answer_4"
+				            				{% if form.instance.correct_answer == 'answer_4' %} checked {% endif %}>
+				            			</div>
+				            		</div>
+				            		<input 
+				            		type="text" 
+				            		class="form-control" 
+				            		name="answer_4"
+				            		value="{% if form.instance.answer_4 %}{{form.instance.answer_4}}{% endif %}">
+				            	</div>
+				            </div>
+				            <div id="answer-5" style="display:{% if form.instance.answer_5 %}inline{% else %}none{% endif %};">
+				            	<div class="input-group mb-3">
+				            		<div class="input-group-prepend">
+				            			<div class="input-group-text">
+				            				<input 
+				            				type="radio" 
+				            				name="correct_answer" 
+				            				value="answer_5"
+				            				{% if form.instance.correct_answer == 'answer_5' %} checked {% endif %}>
+				            			</div>
+				            		</div>
+				            		<input 
+				            		type="text" 
+				            		class="form-control" 
+				            		name="answer_5" 
+				            		value="{% if form.instance.answer_5 %}{{form.instance.answer_5}}{% endif %}">
+				            	</div>
+				            </div>
+			            </div>
+		        	</form>
+
+	            	<div class="form-group">
+	            		<button type="submit" class="btn btn-warning" form="create-question-form">
+	            			Guardar
+	            		</button> 
+	            	</div>
+	            </div>
+	        </div>
+	    </div>
+	</div>
+{% endblock %}
+
+{% block js %}
+<script type="text/javascript">
+	var show_answer = 0;
+	{% if form.instance.answer_1 %} show_answer++; {% endif %}
+	{% if form.instance.answer_2 %} show_answer++; {% endif %}
+	{% if form.instance.answer_3 %} show_answer++; {% endif %}
+	{% if form.instance.answer_4 %} show_answer++; {% endif %}
+	{% if form.instance.answer_5 %} show_answer++; {% endif %}
+
+
+	$("#add-answer").click(function() {
+		show_answer ++;
+		$("#answer-"+show_answer).attr("style", "display:block; width:100%;");
+	});
+	$("#create-question-form").submit(function(event){
+		if(show_answer < 3){
+			event.preventDefault();
+			toastr.error("Debe completar al menos 3 respuestas", "Error en Respuestas!");
+		}
+		for(var i=1; i<=show_answer; i++){
+			if($("#answer-"+i+" input").eq(1).val()==""){
+				event.preventDefault();
+				toastr.error("Debes completar las respuestas seleccionadas", "Error en Respuestas!");
+				return false;
+			}
+		}
+		var count = 0;
+		for(var i=1; i<=show_answer; i++){ 
+			if($("#answer-"+i+" input").eq(0).is(":checked")){
+				count ++;
+			}
+		}
+		if(count == 0){
+			event.preventDefault();
+			toastr.error("Debes seleccionar una respuesta correcta", "Error en Respuestas!");
+			return false;
+		}
+	});
+</script>
 {% endblock %}

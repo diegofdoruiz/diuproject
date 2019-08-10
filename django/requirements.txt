@@ -1,5 +1,7 @@
 celery[redis]
 Django==2.2.3
+pyttsx3
+django-select2-forms
 redis
 django-cors-headers==3.0.2
 djangorestframework==3.9.4

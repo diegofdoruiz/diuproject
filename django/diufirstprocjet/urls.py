@@ -28,5 +28,8 @@ urlpatterns = [
     path('questions/', include('apps.questions.urls', namespace='questions')),
     path('login/', LoginView.as_view(template_name='login.html'), name="login"),
     path('logout/', LogoutView.as_view(template_name='home.html'), name="logout"),
-    path('personajes/', include('apps.tarjetas.urls', namespace='tarjetas')),
+    path('topics/', include('apps.topics.urls', namespace='topics')),
+    path('courses/', include('apps.courses.urls', namespace='courses')),
+    path('games/', include('apps.games.urls', namespace='games')),
+    path('califications/', include('apps.califications.urls', namespace='califications')),
 ]

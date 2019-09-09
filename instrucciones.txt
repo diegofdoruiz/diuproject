@@ -60,7 +60,7 @@ celery worker -A diufirstprocjet -l info
 
 
 
-
+pip install --upgrade git+https://github.com/karulis/pybluez.git#egg=pybluez
 
 
 

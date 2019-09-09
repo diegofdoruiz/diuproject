@@ -1,0 +1,224 @@
+{% extends 'base.html' %}
+{% load bootstrap4 %}
+{% block page_title %}
+Partida {{game.name}}
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+{% endif %}
+
+<div class="container h-100">
+    <div class="row align-items-center h-100">
+        <div class="col-10 mx-auto">
+            <div class="jumbotron" style="padding-top: 0.5rem;">
+                <center>
+                    <h2>Curso: {{game.course}} - Partida: {{game.name}}</h2>
+                </center>
+                <div class="row" style="display: none;"  id="waiting">
+                    <div class="col-12">
+                            <strong>Esperando un tema</strong>
+                            <img src="https://media1.giphy.com/media/10kTz4r3ishQwU/giphy.gif?cid=790b7611a84b756a32c67c9902eca2409e3e52f57b1cb01a&rid=giphy.gif" height="50" width="50">
+                    </div>
+                </div>
+                <div class="row" style="display: none;" id="topic-data">
+                    <div class="col-12">
+                        <p id="topic"></p>
+                        <hr>
+                        <p id="question"></p>
+                        <ol id ="options" type="1">
+                            <li>
+                                <div class="input-group mb-1 alert" id="div-answer_1">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <input type="radio" name="option_selected" />
+                                        </span>
+                                    </div>
+                                    <input type="text" class="form-control" id="answer_1">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="input-group mb-1 alert" id="div-answer_2">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="answer_2">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="input-group mb-1 alert" id="div-answer_3">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="answer_3">
+                                </div>
+                            </li>
+                            <li>
+                                <div class="input-group mb-1 alert" id="div-answer_4">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
+                                    </div>
+                                    <input type="text" class="form-control" id="answer_4">
+                                </div>
+                            </li>
+                        </ol>
+                        <h5 class="text-success" id="correct-answer"></h5>
+                    </div>
+                </div>
+                <div class="row" style="display: none;" id="finished">
+                    <div class="col-12">
+                        <center>
+                            <h1>Gracias por participar!</h1>
+                            <h3>nota: <strong id="value-note"></strong></h3>
+                        </center>
+                    </div>
+                </div>
+                <div class="row">
+                    <button class="btn btn-block btn-warning action" value="on" id="start-game" {% if game.current %}disabled{%endif%}>
+                        Iniciar Partida
+                    </button>
+                    <button class="btn btn-block btn-warning action" value="on" id="stop-game" {% if not game.current %}disabled{%endif%}>
+                        Terminar Partida
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js %}
+<script src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
+<script type="text/javascript">
+
+//id del juego
+var game_id = "{{game.id}}";
+
+//Ajax para iniciar el juego
+$("#start-game").click(function(){
+	$.ajax({
+        url: "{% url 'games:start' %}",
+        type: "GET",
+        data: {
+        	game_id:game_id
+        },
+        success: function (data) {
+        	var response = JSON.parse(data);
+            if (response.channel != 'undefined'){
+                socket.emit('subscribe', response.channel);
+            }
+            console.log(response);
+        }
+    });
+});
+
+//Ajax para actualizar el juego
+$("#stop-game").click(function(){
+	$.ajax({
+        url: "{% url 'games:stop' %}",
+        type: "GET",
+        data: {
+        	game_id:game_id
+        },
+        //
+        success: function (data) {
+        	var response = JSON.parse(data);
+            console.log(response);
+        }
+    });
+});	
+
+/******************************************************************************
+********************************* Comunicación ********************************
+******************************************************************************/
+ // Conectamos con el socket en el servidor de Node
+var socket = io('ws://localhost:3000');
+var promedio = 0;
+var notas = [];
+
+//Recibir mensajes
+socket.on('result', function (data) {
+    var response = JSON.parse(data);
+    console.log(response);
+    if (response.type == "start"){
+        $("#start-game").prop("disabled", true);
+        $("#stop-game").prop("disabled", false);
+        $("#waiting").css("display", "inline");
+    }else if (response.type == "stop"){
+        $("#start-game").prop("disabled", false);
+        $("#stop-game").prop("disabled", true);
+        resetTopic();
+        $("#waiting").css("display", "none");
+        $("#finished").css("display", "none");
+        $("#value-note").text("");
+    }else if (response.type == "topic"){
+        showTopic(response.message);
+    }else if(response.type == "question"){
+        showQuestion(response.message);
+    }else if (response.type == "answer"){
+        showAnswer(response.answer, response.message);
+    }else if (response.type == "confirmation"){
+        answerConfirmation(response.answer, response.message);
+    }else if(response.type == "reset_question"){
+        resetQuestion();
+    }else if(response.type == "reset_topic"){
+        resetTopic();
+    }else if(response.type == "finished"){
+        resetTopic();
+        finished();
+    }else if(response.type == "note"){
+        $("#value-note").text(response.value);
+    }
+});
+
+function showTopic(topic){
+    $("#waiting").css("display", "none");
+    $("#topic-data").css("display", "inline");
+    $("#topic").text(topic);
+}
+
+function showQuestion(question){
+    $("#question").text(question);
+}
+
+function showAnswer(answer_number, answer){
+    $("#"+answer_number).val(answer);
+}
+
+function answerConfirmation(answer_number, answer){
+    if (answer == "") {
+        $("#div-"+answer_number).addClass("alert-success");
+    } else {
+        $("#div-"+answer_number).addClass("alert-danger");
+        $("#correct-answer").text("Respuesta correcta: "+answer);
+    }
+    $("#div-"+answer_number+" input[type='radio']").prop("checked", true);
+}
+
+function resetQuestion(){
+    $(".alert").removeClass("alert-success");
+    $(".alert").removeClass("alert-danger");
+    $("input[type='radio']").prop("checked", false);
+    $("#correct-answer").text("");
+    $("input[type='text']").val("");
+    $("#question").text("");
+}
+
+function resetTopic(){
+    $("#waiting").css("display", "inline");
+    $("#topic-data").css("display", "none");
+    $("#topic").text(topic);
+    resetQuestion();
+}
+
+function finished(){
+    $("#waiting").css("display", "none");
+    $("#finished").css("display", "inline");
+}
+
+</script>
+{% endblock %}

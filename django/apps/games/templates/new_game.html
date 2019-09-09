@@ -1,5 +1,35 @@
 {% extends 'base.html' %}
 {% load bootstrap4 %}
+{% block css %}
+    <style>
+    .circle {
+      height: 150px;
+      width: 150px;
+      background-color: #555;
+      border-radius: 50%;
+    }
+
+    .square {
+      height: 150px;
+      width: 150px;
+      background-color: #555;
+    }
+
+    .rectangle {
+        margin-top: 15%;
+        height: 100px;
+        width: 150px;
+        background-color: #555;
+    }
+    .oval {
+        margin-top: 10%;
+        height:120px;
+        width: 180px;
+        background-color: #555;
+        border-radius: 50%;
+    }
+    </style>  
+{% endblock %}
 {% block page_title %}
 Partida {{game.name}}
 {% endblock %}
@@ -10,8 +40,51 @@ Partida {{game.name}}
 <div class="container h-100">
     <div class="row align-items-center h-100">
         <div class="col-10 mx-auto">
-            <div class="jumbotron" style="padding-top: 0.5rem;">
-                <center>
+            <div class="jumbotron">
+                <div class="row">
+
+                    <div class="col-3 text-center">
+                        <label class="lb-uno"></label>
+                        <div class="circle"></div>
+                    </div>
+                    <div class="col-3">
+                        <label class="text-center lb-dos"></label>
+                        <div class="square"></div>
+                    </div>
+                    <div class="col-3">
+                        <label class="text-center lb-tres"></label>
+                        <div class="rectangle"></div>
+                    </div>
+                    <div class="col-3">
+                        <label class="text-center lb-cuatro"></label>
+                        <div class="oval"></div>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-4 text-center">
+                        <form method="GET" action="{% url 'games:control' %}" class="task-control">
+                            <input type="hidden" name="task_id" value="">
+                            <input type="hidden" name="action" value="start">
+                            <button class="btn btn-success">Start</button>
+                        </form>
+                    </div>
+                    <div class="col-4 text-center">
+                        <form method="GET" action="{% url 'games:control' %}" class="task-control">
+                            <input type="hidden" name="task_id" value="">
+                            <input type="hidden" name="action" value="pause">
+                            <button class="btn btn-warning">Pause</button>
+                        </form>
+                    </div>
+                    <div class="col-4 text-center">
+                        <form method="GET" action="{% url 'games:control' %}" class="task-control">
+                            <input type="hidden" name="task_id" value="">
+                            <input type="hidden" name="action" value="stop">
+                            <button class="btn btn-danger">Stop</button>
+                        </form>
+                    </div>
+                </div>
+                <!-- <center>
                     <h2>Curso: {{game.course}}</h2>
                     <h3>Partida: {{game.name}}</h3>
                 </center>
@@ -24,9 +97,8 @@ Partida {{game.name}}
                             <li>
                                 <div class="input-group mb-3 alert" id="div-answer-1">
                                     <div class="input-group-prepend">
-                                        <span class="input-group-text">
-                                            <input type="radio" name="option_selected" />
-                                        </span>
+                                        <span class="input-group-text"><input type="radio"
+                                                name="option_selected" /></span>
                                     </div>
                                     <input type="text" class="form-control" id="answer_1">
                                 </div>
@@ -74,7 +146,7 @@ Partida {{game.name}}
 
                         Iniciar Partida
                     </button>
-                </div>
+                </div> -->
             </div>
         </div>
     </div>
@@ -97,8 +169,35 @@ Partida {{game.name}}
     /* Cualquier mensaje que se reciba en el canal "result"
     se agrega dentro del div "result" */
     socket.on('result', function (data) {
-        console.log('socker on');
         var response = JSON.parse(data);
+        console.log(response);
+        //*************Test bluetooth************
+        if(response.arduino_message == "1\r\n"){
+            $(".circle").css("background-color", "red");
+            $(".lb-uno").text("Presionó 1");
+            setInterval(function() {
+                $(".circle").css("background-color", "#555");
+                $(".lb-uno").text("");
+            },50);
+            
+        }else if(response.arduino_message == "2\r\n"){
+            $(".square").css("background-color", "green");
+            setInterval(function() {
+                $(".square").css("background-color", "#555");
+            },50);
+        }else if(response.arduino_message == "3\r\n"){
+            $(".rectangle").css("background-color", "blue");
+            setInterval(function() {
+                $(".rectangle").css("background-color", "#555");
+            },50);
+        }else if(response.arduino_message == "4\r\n"){
+            $(".oval").css("background-color", "yellow");
+            setInterval(function() {
+                $(".oval").css("background-color", "#555");
+            },50);
+        }
+
+        //*************/Test bluetooth***********
         var type = response.type;
         var to_read = response.to_read;
         if (type == "reader") {
@@ -257,7 +356,7 @@ Partida {{game.name}}
         event.preventDefault();
         $.ajax({
             type: 'POST',
-            url: "{% url 'games:play_game' game.id %}",
+            url: "{% url 'games:test' game.id %}",
             data: $('form').serialize(),
             success: function (celeryTaskId) {
                 /* La vista devuelve el ID de la tarea de Celery
@@ -277,7 +376,6 @@ Partida {{game.name}}
     ****************************** Datos y lógica del juego ****************************
     *********************************************************************************-->
 <script type="text/javascript">
-
     //get all topics from jinja
     var topics = {};
     var counter_topics = 0;
@@ -502,6 +600,31 @@ Partida {{game.name}}
             enviarNota(notas[i], topics[current_key_topic].questions[current_key_question].id, user_game, game_id);
         }
     }
+</script>
 
+
+<!-- ******************** Control de tareas ********************************-->
+<script type="text/javascript">
+    $(".task-control").submit(function(e){
+        e.preventDefault();
+        task_id = $(this).children().eq(0).val(); 
+        action = $(this).children().eq(1).val();
+        $.ajax({
+            url: "{% url 'games:control' %}",
+            type: "GET",
+            data: {
+                action: action,
+                task_id: task_id,
+            },
+            success: function (data) {
+                var result = JSON.parse(data);
+                if(result.task = "running"){
+                    socket.emit('subscribe', result.task_id);
+                }
+                // guardar el id de la tarea
+                $(".task-control input[name='task_id']").val(result.task_id);
+            }
+        });
+    });
 </script>
 {% endblock %}

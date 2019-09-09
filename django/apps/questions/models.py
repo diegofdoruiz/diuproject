@@ -10,5 +10,7 @@ class Question(models.Model):
 	answer_5 = models.CharField(max_length=512, null=True, blank=True)
 	correct_answer = models.CharField(max_length=32, null=False, blank=False)
 	video = models.CharField(blank=False, max_length=500)
+	completed = models.BooleanField(default=False)
+	current = models.BooleanField(default=False)
 	def __str__(self):
 		return self.name

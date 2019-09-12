@@ -5,10 +5,28 @@
 {% endblock %}
 
 {% block content %}
-	<h1>Formulario para que el usuario inicie sesión</h1>
-    <form method="POST" action="{% url 'login' %}">
-	    {% csrf_token %}
-		{% bootstrap_form form %}
-		<button type="submit">Guardar</button>
-	</form>
+	
+
+	<div class="container h-100">
+    <div class="row align-items-center h-100">
+        <div class="col-8 mx-auto">
+            <div class="jumbotron" style="padding-top: 0.5rem;">
+				<br>
+				<br>
+
+                <h1 align= "center" >Inicio sesión</h1>
+				
+				<br>
+				<form method="POST" action="{% url 'login' %}">
+					{% csrf_token %}
+					{% bootstrap_form form %}
+					<button  class= "btn btn-info" type="submit">Guardar</button>
+				</form>
+               
+            </div>
+        </div>
+    </div>
+</div>
+
 {% endblock %}
+

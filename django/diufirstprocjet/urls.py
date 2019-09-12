@@ -20,14 +20,14 @@ from django.views.generic import TemplateView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', TemplateView.as_view(template_name='home.html'), name='home'),
+    path('home/', TemplateView.as_view(template_name='home.html') , name='home'),
     path('realtime/', include('apps.realtime.urls', namespace='realtime')),
     path('arduino/', include('apps.arduino.urls', namespace='arduino')),
     path('users/', include('apps.users.urls', namespace='users')),
     path('roles/', include('apps.roles.urls', namespace='roles')),
     path('questions/', include('apps.questions.urls', namespace='questions')),
-    path('login/', LoginView.as_view(template_name='login.html'), name="login"),
-    path('logout/', LogoutView.as_view(template_name='home.html'), name="logout"),
+    path('', LoginView.as_view(template_name='login.html'), name="login"),
+    path('logout/', LogoutView.as_view(template_name='login.html'), name="logout"),
     path('topics/', include('apps.topics.urls', namespace='topics')),
     path('courses/', include('apps.courses.urls', namespace='courses')),
     path('games/', include('apps.games.urls', namespace='games')),

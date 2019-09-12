@@ -60,7 +60,13 @@ class PlayGameView(TemplateView):
     def get_context_data(self, **kwargs):
         # test()
         context = super(PlayGameView, self).get_context_data(**kwargs)
-        context['game'] = get_object_or_404(Game, pk=self.kwargs.get('pk'))
+        user= self.request.user 
+        course = user.course_set.all()[0]
+        game = course.game_set.all()[0]
+        print(user.groups.all())
+        print(course)
+        print(game)
+        context['game'] = game
         app.control.purge()
         return context
 

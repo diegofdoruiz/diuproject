@@ -95,7 +95,9 @@ AUTH_USER_MODEL = "users.User"
 
 LOGIN_URL = '/login'
 
-LOGIN_REDIRECT_URL='/'
+LOGIN_REDIRECT_URL='/users/home'
+LOGOUT_REDIRECT_URL= 'login'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

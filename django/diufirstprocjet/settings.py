@@ -30,7 +30,7 @@ SECRET_KEY = '*ksgom50@-^rj+96^$9o8(k_j8nvb31-ehckw@6i0!es0zr6-r'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.99.102']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', '192.168.99.102', 'www.proyecto.com', 'proyecto.com']
 
 
 # Application definition
@@ -95,7 +95,9 @@ AUTH_USER_MODEL = "users.User"
 
 LOGIN_URL = '/login'
 
-LOGIN_REDIRECT_URL='/'
+LOGIN_REDIRECT_URL='/users/home'
+LOGOUT_REDIRECT_URL= 'login'
+
 
 # Password validation
 # https://docs.djangoproject.com/en/2.2/ref/settings/#auth-password-validators

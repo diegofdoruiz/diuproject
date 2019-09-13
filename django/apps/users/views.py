@@ -37,8 +37,13 @@ def edit(request, pk):
         if form.is_valid():
             user = form.save(commit=False)
             password = request.POST.get('password1', '')
+
             if password == '':
                 user.password = instance.password
+            else: 
+                user.set_password(password)
+                print(user.username)
+
             user = form.save()
             user.groups.clear()
             for g in request.POST.getlist('groups'):
@@ -58,3 +63,9 @@ class UserDeleteView(PermissionRequiredMixin, DeleteView):
     model = User
     permission_required = 'users.delete_user'
     success_url = reverse_lazy('users:users')
+
+def home(request):
+    if request.user.groups.filter(name = 'estudiante').exists():
+        return redirect('games:play_game')
+    else : 
+        return redirect('home')

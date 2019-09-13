@@ -141,3 +141,5 @@ dmypy.json
 
 **/migrations/**
 django/diufirstprocjet/secrets.json
+node/node_modules/s
+node/package-lock.jsons

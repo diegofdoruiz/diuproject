@@ -68,10 +68,22 @@ def readText(self, text, key_topic, key_question, to_read):
 def listenBluetooth(self, game_id):
 	# Se instancia el juego o partida
 	game = get_object_or_404(Game, pk=game_id)
+	game.reading_topic=True
+	game.reading_question=True
+	control.readText('Inciando la actividad. Por favor espere')
+	game.reading_topic=False
+	game.reading_question=False
+
 	print("start task")
 	port="/dev/tty.MUISCAS-SPPDev" #This will be different for various devices and on windows it will probably be a COM port.
 	bluetooth=serial.Serial(port, 9600)#Start communications with the bluetooth unit
 	print("Connected")
+	game.reading_topic=True
+	game.reading_question=True
+	control.readText('A partir de este momento, interactúe solo con el mapa hasta finalizar la actividad')
+	control.readText('Presione un punto de mapa.')
+	game.reading_topic=False
+	game.reading_question=False
 	# Juego iniciado
 	response_data = {}
 	response_data['type'] = "start"
@@ -334,6 +346,9 @@ def nextTopic(self, game_id, topic_card_number):
 def initGame(self, game_id):
 	# Se instancia el juego o partida
 	game = get_object_or_404(Game, pk=game_id)
+
+	if game.arduino_task_id != None:
+		return
 
 	Calification.objects.filter(game_id=game.id).delete()
 

@@ -1,5 +1,5 @@
 celery[redis]
-Django==2.2.3
+Django==2.2.21
 pyttsx3
 django-select2-forms
 redis
